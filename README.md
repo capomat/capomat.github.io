@@ -2,4 +2,4 @@
 
 Браузерная игра. Управление — стрелки ← → (или A / D), старт — пробел.
 
-Играть: https://perrygrotter.github.io/
+Играть: https://capomat.github.io/
