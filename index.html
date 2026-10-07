@@ -56,8 +56,10 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 #sndBtn.snd-off .off{display:inline}
 .kbd{display:inline-block;width:26px;height:9px;border:2px solid currentColor;border-top:0;border-radius:0 0 4px 4px;margin-left:10px;vertical-align:middle;opacity:.9}
 .btn{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:14px;line-height:1;height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;border:2px solid var(--btn);background:var(--btn);color:var(--btnfg);cursor:pointer}
-.btn.ghost{background:transparent;color:var(--fg)}
-.btn.red{background:var(--red);border-color:var(--red);color:#fff}
+/* Кнопки: primary — главная (по умолчанию белая, в светлой теме чёрная), primary accent — красная, secondary — контурная */
+.btn.primary{background:var(--btn);border-color:var(--btn);color:var(--btnfg)}
+.btn.primary.accent{background:var(--red);border-color:var(--red);color:#fff}
+.btn.secondary{background:transparent;border-color:var(--btn);color:var(--fg)}
 .btn{-webkit-tap-highlight-color:transparent}
 .btn:disabled{opacity:.3;cursor:default}
 .btn:focus-visible{outline:3px solid var(--red);outline-offset:3px}
@@ -167,22 +169,22 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       <div class="stat"><span>Рекорд</span><b id="best">—</b></div>
     </div>
     <div class="hdr-actions">
-      <button class="btn ghost icon" id="sndBtn" aria-label="Выключить звук" aria-pressed="true">
+      <button class="btn secondary icon" id="sndBtn" aria-label="Выключить звук" aria-pressed="true">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>
           <g class="on"><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></g>
           <g class="off"><path d="M16 9l5 6M21 9l-5 6"/></g>
         </svg>
       </button>
-      <button class="btn ghost" id="lbBtn">Лидеры</button>
-      <button class="btn ghost" id="baseBtn">База</button>
+      <button class="btn secondary" id="lbBtn">Лидеры</button>
+      <button class="btn secondary" id="baseBtn">База</button>
     </div>
   </div>
 </header>
 <main>
   <div class="room" id="black"><div class="name">Lu4 Black</div><div class="field"><div class="lane cap"></div><div class="lane k"></div><div class="pop"></div></div></div>
   <div class="room" id="white"><div class="name">Lu4 White</div><div class="field"><div class="lane cap"></div><div class="lane k"></div><div class="pop"></div></div></div>
-  <button class="btn red" id="startBtn" aria-label="В погоню! (пробел)">В погоню!<i class="kbd" aria-hidden="true"></i></button>
+  <button class="btn primary accent" id="startBtn" aria-label="В погоню! (пробел)">В погоню!<i class="kbd" aria-hidden="true"></i></button>
   <div id="overlay"><div class="card" id="card"></div></div>
 </main>
 <script src="share-card.js"></script>
@@ -390,7 +392,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     '<a href="https://l2mammon.com/?utm_source=dogoni-sarmata&utm_medium=game&utm_campaign=leaderboard" target="_blank" rel="noopener">Узнай на l2mammon.com \u2192</a></div>';
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
-    openCard('<h2>Лидеры</h2>'+boardHtml()+PROMO+'<div class="row"><button class="btn red" id="closeLb">Закрыть</button></div>','lb',mode);
+    openCard('<h2>Лидеры</h2>'+boardHtml()+PROMO+'<div class="row"><button class="btn secondary" id="closeLb">Закрыть</button></div>','lb',mode);
     wireButtons();
   }
   function wireButtons(){
@@ -411,18 +413,18 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       else showBoard('saved');
     }catch(e){
       myId=null;
-      openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn red" id="again">Ещё раз</button><button class="btn ghost" id="later">Позже</button></div>');
+      openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn primary accent" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
   // ---------- База: три видео с YouTube, плеер открывается поверх сайта ----------
-  const VIDEOS=[{id:'atJMbuAIRr0',t:'CapMaT трус'},{id:'PRm7CA0F0BA',t:'CapMaT петух'},{id:'vTPyrhlB2v8',t:'CapMaT пиздабол'}];
+  const VIDEOS=[{id:'atJMbuAIRr0',t:'CapMaT трус'},{id:'PRm7CA0F0BA',t:'CapMaT петух'},{id:'vTPyrhlB2v8',t:'CapMaT врун'}];
   const PLAY='<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="#fff"/></svg></span>';
   function showBase(){
     if(gain)syncSnd();
     openCard('<h2>База</h2><ul class="vids">'+VIDEOS.map((v,i)=>
       '<li><button class="vid" data-i="'+i+'"><span class="th"><img alt="" src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg">'+PLAY+'</span><span class="tt">'+esc(v.t)+'</span></button></li>').join('')+
-      '</ul><div class="row"><button class="btn red" id="closeBase">Закрыть</button></div>','base');
+      '</ul><div class="row"><button class="btn secondary" id="closeBase">Закрыть</button></div>','base');
     $('card').querySelectorAll('.vid').forEach(b=>b.onclick=()=>showVideo(+b.dataset.i));
     $('closeBase').onclick=closeBase;$('card').querySelector('.vid').focus();
   }
@@ -439,7 +441,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   function showShareCard(place,nick,score){
     const seq=++cardSeq;
     openCard('<div class="shareprev" id="sharePrev"></div>'+
-      '<div class="row"><button class="btn red" id="shareBtn" disabled>Скопировать</button><button class="btn ghost" id="closeShare">Закрыть</button></div>','card');
+      '<div class="row"><button class="btn primary" id="shareBtn" disabled>Скопировать</button><button class="btn secondary" id="closeShare">Закрыть</button></div>','card');
     $('closeShare').onclick=closeShareCard;
     (async()=>{
       try{
@@ -506,7 +508,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       const place=top.filter(r=>r.score>=pts).length+1;
       openCard('<div class="big">Место #'+place+'</div><p style="font-size:18px">'+pts+' '+word+'</p>'+
         '<input id="nameIn" maxlength="16" placeholder="Введи никнейм">'+
-        '<div class="row"><button class="btn red" id="saveBtn">Сохранить</button><button class="btn ghost" id="cancelBtn">Закрыть</button></div>','entry');
+        '<div class="row"><button class="btn primary" id="saveBtn">Сохранить</button><button class="btn secondary" id="cancelBtn">Закрыть</button></div>','entry');
       const inp=$('nameIn');inp.focus();
       const go=()=>{const n=inp.value.trim().slice(0,16);if(!n){inp.focus();return}
         $('saveBtn').disabled=true;saveScore(pts,n)};
@@ -515,7 +517,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
       openCard('<div class="big">CapMaT убежал</div>'+
-        '<div class="row"><button class="btn red" id="again">Ещё раз</button><button class="btn ghost" id="later">Позже</button></div>');
+        '<div class="row"><button class="btn primary accent" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
