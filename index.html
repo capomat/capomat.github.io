@@ -22,18 +22,20 @@ html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--fg);font-family:Manrope,system-ui,sans-serif;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 header{display:flex;flex-direction:column;gap:10px;padding:12px 16px 10px;flex:none}
 h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;line-height:28px;height:28px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;height:48px}
+.bar-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;height:48px}
 .stats{display:flex;gap:28px}
 .stat{display:flex;flex-direction:column;line-height:1}
 .stat span{font-size:12px;opacity:.6;margin-bottom:5px}
 .stat b{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:20px;font-variant-numeric:tabular-nums;min-width:5ch}
+@media (max-width:440px){.stats{gap:16px}.stat b{font-size:18px;min-width:0}}
+@media (max-width:360px){.stats{gap:12px}.stat b{font-size:16px}}
 .hdr-actions{display:flex;gap:8px;align-items:center}
-.btn.icon{padding:0;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center}
+.btn.icon{padding:0;width:44px}
 #sndBtn .off{display:none}
 #sndBtn.muted .on{display:none}
 #sndBtn.muted .off{display:inline}
 .kbd{display:inline-block;width:26px;height:9px;border:2px solid currentColor;border-top:0;border-radius:0 0 4px 4px;margin-left:10px;vertical-align:middle;opacity:.9}
-.btn{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:14px;padding:10px 18px;border-radius:999px;border:2px solid var(--btn);background:var(--btn);color:var(--btnfg);cursor:pointer}
+.btn{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:14px;line-height:1;height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;border:2px solid var(--btn);background:var(--btn);color:var(--btnfg);cursor:pointer}
 .btn.ghost{background:transparent;color:var(--fg)}
 .btn.red{background:var(--red);border-color:var(--red);color:#fff}
 .btn:disabled{opacity:.3;cursor:default}
@@ -72,7 +74,8 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 footer{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 16px}
 .controls{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
 footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;line-height:1.45}
-.arrow{font-size:22px;width:64px;padding:8px 0}
+.room{-webkit-tap-highlight-color:transparent}
+@media (hover:none) and (pointer:coarse){.kbd-hint,.kbd{display:none}}
 #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:50;padding:20px}
 .card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center}
 .card h2{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:24px;margin:0 0 8px}
@@ -125,7 +128,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   <div class="controls">
     <button class="btn red" id="startBtn" aria-label="Старт (пробел)">Старт<i class="kbd" aria-hidden="true"></i></button>
   </div>
-  <p>Управляй keltaa стрелочками ← и →, чтобы догнать Сармата</p>
+  <p class="kbd-hint">Управляй keltaa стрелочками ← и →, чтобы догнать Сармата</p>
 </footer>
 <script>
 (function(){
@@ -324,6 +327,9 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   }
 
   $('startBtn').onclick=start;
+  // на тач-экранах тап по клетке работает как стрелка в её сторону
+  rooms.black.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')move(-1)});
+  rooms.white.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')move(1)});
   window.addEventListener('keydown',e=>{
     if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();move(-1)}
     if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();move(1)}
