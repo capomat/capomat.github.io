@@ -79,6 +79,17 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
 @media (hover:none) and (pointer:coarse){.kbd-hint,.kbd{display:none}}
 #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:50;padding:20px}
 .card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center}
+.card.wide{max-width:min(960px,calc((100vh - 150px)*16/9));padding:16px}
+.vids{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.vid{display:flex;align-items:center;gap:14px;width:100%;padding:8px;border:0;border-radius:14px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.vid:hover{background:rgba(127,127,127,.15)}
+.vid:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.vid .th{position:relative;flex:none;width:144px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
+.vid .th img{display:block;width:100%;height:100%;object-fit:cover}
+.vid .play{position:absolute;inset:0;margin:auto;width:40px;height:40px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center}
+.vid .tt{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:18px}
+.player{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .card h2{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:24px;margin:0 0 8px}
 .card p{margin:0 0 8px;line-height:1.5;font-size:15px}
 .card .big{font-family:Unbounded,system-ui,sans-serif;font-size:44px;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
@@ -128,6 +139,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
 <footer>
   <div class="controls">
     <button class="btn red" id="startBtn" aria-label="Старт (пробел)">Старт<i class="kbd" aria-hidden="true"></i></button>
+    <button class="btn ghost" id="baseBtn">База</button>
   </div>
   <p class="kbd-hint">Управляй keltaa стрелочками ← и →, чтобы догнать Сармата</p>
 </footer>
@@ -210,7 +222,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   function start(){
     reset();s.running=true;s.last=performance.now();
     $('overlay').style.display='none';$('overlay').dataset.view='';loadTop();
-    $('startBtn').disabled=true;$('lbBtn').disabled=true;$('sndBtn').disabled=true;myId=null;startMusic();
+    $('startBtn').disabled=true;$('lbBtn').disabled=true;$('baseBtn').disabled=true;$('sndBtn').disabled=true;myId=null;startMusic();
     capChip.className='chip cap run';
     raf=requestAnimationFrame(loop);
   }
@@ -303,7 +315,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
     return '<ol class="lb">'+top.map(row).join('')+'</ol>';
   }
   function openCard(html,view,mode){
-    $('card').innerHTML=html;$('overlay').dataset.view=view||'';$('overlay').dataset.mode=mode||'';
+    $('card').className='card';$('card').innerHTML=html;$('overlay').dataset.view=view||'';$('overlay').dataset.mode=mode||'';
     $('overlay').style.display='flex';
   }
   function closeCard(){$('overlay').style.display='none';$('overlay').dataset.view=''}
@@ -331,13 +343,34 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
       wireButtons();
     }
   }
+  // ---------- База: три видео с YouTube, плеер открывается поверх сайта ----------
+  const VIDEOS=[{id:'atJMbuAIRr0',t:'Трус'},{id:'PRm7CA0F0BA',t:'Петух'},{id:'vTPyrhlB2v8',t:'Пиздабол'}];
+  const PLAY='<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="#fff"/></svg></span>';
+  function showBase(){
+    if(gain)syncSnd();
+    openCard('<h2>База</h2><ul class="vids">'+VIDEOS.map((v,i)=>
+      '<li><button class="vid" data-i="'+i+'"><span class="th"><img alt="" src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg">'+PLAY+'</span><span class="tt">'+esc(v.t)+'</span></button></li>').join('')+
+      '</ul><div class="row"><button class="btn red" id="closeBase">Закрыть</button></div>','base');
+    $('card').querySelectorAll('.vid').forEach(b=>b.onclick=()=>showVideo(+b.dataset.i));
+    $('closeBase').onclick=closeBase;$('card').querySelector('.vid').focus();
+  }
+  function showVideo(i){
+    const v=VIDEOS[i];
+    if(gain)gain.gain.setTargetAtTime(0,actx.currentTime,0.05); // фоновая музыка молчит, пока идёт видео
+    openCard('<div class="player"><iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0" title="'+esc(v.t)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>'+
+      '<div class="row"><button class="btn ghost" id="backBase">Назад</button><button class="btn red" id="closeBase">Закрыть</button></div>','video');
+    $('card').classList.add('wide');
+    $('backBase').onclick=showBase;$('closeBase').onclick=closeBase;
+  }
+  function closeBase(){closeCard();if(gain)syncSnd();$('baseBtn').focus()}
+  $('baseBtn').onclick=()=>{if(!s.running)showBase()};
   $('lbBtn').onclick=()=>{if(!s.running){lbReady=false;showBoard('menu');loadTop()}};
 
   function over(){
     s.running=false;cancelAnimationFrame(raf);
     capChip.className='chip cap';capMover.style.transform='';
     const pts=Math.floor(s.score);
-    $('startBtn').disabled=false;$('lbBtn').disabled=false;$('sndBtn').disabled=false;
+    $('startBtn').disabled=false;$('lbBtn').disabled=false;$('baseBtn').disabled=false;$('sndBtn').disabled=false;
     const n10=pts%10,n100=pts%100;
     const word=(n10===1&&n100!==11)?'очко':(n10>=2&&n10<=4&&(n100<12||n100>14))?'очка':'очков';
     if(qualifies(pts)){
@@ -365,9 +398,11 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   window.addEventListener('keydown',e=>{
     if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();move(-1)}
     if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();move(1)}
-    if(e.code==='Space'){e.preventDefault();if(!s.running&&$('overlay').dataset.view!=='entry')start()}
+    const view=$('overlay').dataset.view;
+    if(e.code==='Escape'&&(view==='base'||view==='video')){closeBase();return}
+    if(e.code==='Space'){if(view==='base'||view==='video')return;e.preventDefault();if(!s.running&&view!=='entry')start()}
   });
-  window.addEventListener('keyup',e=>{if(e.code==='Space'&&$('overlay').dataset.view!=='entry')e.preventDefault()});
+  window.addEventListener('keyup',e=>{const v=$('overlay').dataset.view;if(e.code==='Space'&&v!=='entry'&&v!=='base'&&v!=='video')e.preventDefault()});
   // ---------- Фоновая музыка ----------
   // Громкость через Web Audio (GainNode): у <audio>.volume на iPhone/iPad громкость не меняется вообще.
   const VOLUME=0.1;
