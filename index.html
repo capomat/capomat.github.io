@@ -275,7 +275,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       // ушёл из клетки CapMat: угадал прыжок или повёлся
       if(s.phase==='windup'&&!s.fake)pop(s.k,40,'Угадал');
       else if(s.phase==='windup'&&s.fake)pop(s.k,-30);
-      else pop(s.k,-20,'Мимо');
+      else pop(s.k,-20,'Упс');
     }else if(s.k===s.cap&&s.sinceJump<260){
       pop(s.k,25);
     }
