@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Догони Сармата</title>
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#d9d9d9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#262626" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
@@ -144,7 +150,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
           <g class="off"><path d="M16 9l5 6M21 9l-5 6"/></g>
         </svg>
       </button>
-      <button class="btn ghost" id="lbBtn">Лидеры</button>
+      <button class="btn ghost" id="lbBtn">Ловцы</button>
       <button class="btn ghost" id="baseBtn">База</button>
     </div>
   </div>
@@ -347,7 +353,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     '<a href="https://l2mammon.com/?utm_source=dogoni-sarmata&utm_medium=game&utm_campaign=leaderboard" target="_blank" rel="noopener">Узнай на l2mammon.com \u2192</a></div>';
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
-    openCard('<h2>Лидеры</h2>'+boardHtml()+PROMO+'<div class="row"><button class="btn red" id="closeLb">Закрыть</button></div>','lb',mode);
+    openCard('<h2>Ловцы Петуха</h2>'+boardHtml()+PROMO+'<div class="row"><button class="btn red" id="closeLb">Закрыть</button></div>','lb',mode);
     wireButtons();
   }
   function wireButtons(){
