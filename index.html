@@ -151,6 +151,8 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .muted{opacity:.6;font-size:14px}
 .card input{width:100%;margin-top:10px;font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:2px solid var(--fg);background:transparent;color:var(--fg)}
 .card input:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.shareprev{display:block;width:100%;max-width:360px;aspect-ratio:1;margin:0 auto;border-radius:12px;background:#0d0d0d}
+#shareBtn{white-space:normal;height:auto;min-height:44px;padding:10px 18px;line-height:1.25}
 .card .row{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){.chip.cap.run,.chip.cap.tense{animation-duration:.5s}}
 </style>
@@ -182,6 +184,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   <button class="btn red" id="startBtn" aria-label="В погоню! (пробел)">В погоню!<i class="kbd" aria-hidden="true"></i></button>
   <div id="overlay"><div class="card" id="card"></div></div>
 </main>
+<script src="share-card.js"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -401,7 +404,10 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
         body:JSON.stringify({name:name,score:pts})});
       if(!r.ok)throw new Error(r.status);
       myId=(await r.json())[0].id;
-      lbReady=false;showBoard('saved');loadTop();
+      await loadTop();
+      const place=top.findIndex(r=>r.id===myId)+1;
+      if(place>0&&window.SarmatCard)showShareCard(place,name,pts);
+      else showBoard('saved');
     }catch(e){
       myId=null;
       openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn red" id="again">Ещё раз</button><button class="btn ghost" id="later">Позже</button></div>');
@@ -426,8 +432,43 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     $('card').classList.add('bare');
   }
   // Esc: База и видео закрываются как обычно, остальные окна (лидеры, результат, ввод ника) — как их кнопка «Закрыть»
+  // ---------- Карточка для шаринга (рисуется в браузере, share-card.js) ----------
+  let cardSeq=0,cardUrl=null;
+  function prepareCard(){try{SarmatCard.prepare().catch(()=>{})}catch(e){}}
+  function showShareCard(place,nick,score){
+    const seq=++cardSeq;
+    openCard('<div class="shareprev" id="sharePrev"></div>'+
+      '<div class="row"><button class="btn red" id="shareBtn" disabled>Поделиться</button><button class="btn ghost" id="closeShare">Закрыть</button></div>','card');
+    $('closeShare').onclick=closeShareCard;
+    (async()=>{
+      try{
+        const canvas=await SarmatCard.render({place,nick,score});
+        const blob=await SarmatCard.toBlob(canvas);
+        if(seq!==cardSeq||$('overlay').dataset.view!=='card')return; // окно уже закрыли или открыли новую карточку
+        if(cardUrl)URL.revokeObjectURL(cardUrl);
+        cardUrl=URL.createObjectURL(blob);
+        const img=new Image();img.className='shareprev';img.alt='Карточка: место #'+place+', '+score+' '+SarmatCard.pointsWord(score);img.src=cardUrl;
+        $('sharePrev').replaceWith(img);
+        const b=$('shareBtn');b.disabled=false;b.focus();
+        b.onclick=async()=>{
+          b.disabled=true;let res='cancelled';
+          try{res=await SarmatCard.share({blob,
+            text:'Место #'+place+' в «Догони CapMaTa»: '+score+' '+SarmatCard.pointsWord(score)+'. Догонишь CapMaTa?',
+            url:'https://capomat.github.io/',filename:'capmat-'+place+'.png'})}catch(e){}
+          if(!b.isConnected)return;
+          b.disabled=false;
+          if(res==='copied')b.textContent='Скопировано — вставь в Telegram';
+          else if(res==='downloaded')b.textContent='Картинка скачана';
+        };
+      }catch(e){
+        if(seq===cardSeq&&$('overlay').dataset.view==='card')showBoard('saved'); // не нарисовалось — сразу рейтинг
+      }
+    })();
+  }
+  function closeShareCard(){showBoard('saved')}
   function closeAnyCard(){
     const v=$('overlay').dataset.view;
+    if(v==='card')return closeShareCard();
     if(v==='base'||v==='video')return closeBase();
     closeCard();reset();$('startBtn').focus();
   }
@@ -448,6 +489,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     const n10=pts%10,n100=pts%100;
     const word=(n10===1&&n100!==11)?'очко':(n10>=2&&n10<=4&&(n100<12||n100>14))?'очка':'очков';
     if(qualifies(pts)){
+      prepareCard(); // шрифты и картинки карточки грузятся, пока игрок вводит ник
       const place=top.filter(r=>r.score>=pts).length+1;
       openCard('<div class="big">Место #'+place+'</div><p style="font-size:18px">'+pts+' '+word+'</p>'+
         '<input id="nameIn" maxlength="16" placeholder="Введи никнейм">'+
@@ -474,9 +516,9 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();move(1)}
     const view=$('overlay').dataset.view;
     if(e.code==='Escape'&&$('overlay').style.display==='flex'){closeAnyCard();return}
-    if(e.code==='Space'){if(view==='base'||view==='video')return;e.preventDefault();if(!s.running&&view!=='entry')start()}
+    if(e.code==='Space'){if(view==='base'||view==='video'||view==='card')return;e.preventDefault();if(!s.running&&view!=='entry')start()}
   });
-  window.addEventListener('keyup',e=>{const v=$('overlay').dataset.view;if(e.code==='Space'&&v!=='entry'&&v!=='base'&&v!=='video')e.preventDefault()});
+  window.addEventListener('keyup',e=>{const v=$('overlay').dataset.view;if(e.code==='Space'&&v!=='entry'&&v!=='base'&&v!=='video'&&v!=='card')e.preventDefault()});
   // ---------- Фоновая музыка ----------
   // Громкость через Web Audio (GainNode): у <audio>.volume на iPhone/iPad громкость не меняется вообще.
   const VOLUME=0.1;
