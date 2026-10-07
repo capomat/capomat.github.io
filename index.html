@@ -144,6 +144,40 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   capMover.appendChild(capChip);
   const kChip=document.createElement('div');kChip.className='chip k';kChip.textContent='\u2665\uFE0E keltaa';
 
+  // Перелёт keltaa между клетками. Логика игры меняет клетку мгновенно, это только картинка:
+  // летит копия в фиксированном слое поверх клеток (у .room overflow:hidden, внутри неё не перелететь).
+  const fxLayer=document.createElement('div');
+  fxLayer.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:40';
+  document.body.appendChild(fxLayer);
+  const reduceMotion=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let kGhost=null;
+  const kRect=()=>(kGhost||kChip).getBoundingClientRect();
+  function clearGhost(){
+    if(!kGhost)return;
+    kGhost.getAnimations().forEach(a=>a.cancel());kGhost.remove();kGhost=null;
+    kChip.style.visibility='';
+  }
+  function flyK(from,dir){
+    clearGhost();
+    const to=kChip.getBoundingClientRect();
+    const dx=from.left-to.left, dy=from.top-to.top;
+    if(reduceMotion||(!dx&&!dy)||!kChip.animate)return;
+    const g=kChip.cloneNode(true);
+    g.style.cssText='position:fixed;margin:0;left:'+to.left+'px;top:'+to.top+'px;width:'+to.width+'px;height:'+to.height+'px';
+    fxLayer.appendChild(g);kGhost=g;kChip.style.visibility='hidden';
+    const lift=Math.min(70,Math.abs(dx)*.22);  // высота дуги
+    const T=(x,y,sx,sy,r)=>'translate('+x+'px,'+y+'px) scale('+sx+','+sy+') rotate('+r+'deg)';
+    const a=g.animate([
+      {transform:T(dx,dy,1,1,0)},
+      {offset:.12,transform:T(dx*.9,dy*.9-lift*.35,1.14,.86,-dir*5)},   // отрыв: вытягивается по ходу
+      {offset:.5, transform:T(dx*.4,dy*.4-lift,1.04,.96,dir*7)},        // верх дуги
+      {offset:.78,transform:T(0,0,1.16,.84,0)},                         // приземление: сплющивается
+      {offset:.9, transform:T(0,-lift*.08,.96,1.04,0)},                 // отскок
+      {transform:T(0,0,1,1,0)}
+    ],{duration:300,easing:'cubic-bezier(.3,.7,.4,1)'});
+    a.onfinish=()=>{if(kGhost===g)clearGhost()};
+  }
+
   const DRAIN=850;   // мс врозь до пустого запаса (запас не показывается)
   const REFILL=700;  // мс рядом до полного запаса
 
@@ -151,7 +185,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   function reset(){
     s={k:'black',cap:'white',running:false,elapsed:0,score:0,meter:1,
        phase:'rest',phaseT:0,phaseDur:0,fake:false,nextIn:1200,last:0,clean:0,sinceJump:0};
-    place();capMover.style.transform='';capChip.className='chip cap';
+    clearGhost();place();capMover.style.transform='';capChip.className='chip cap';
     $('score').textContent='0';
   }
   function place(){
@@ -185,7 +219,8 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
     const dest=dir<0?'black':'white';
     if(dest===s.k)return;
     const leaving=s.k===s.cap;
-    s.k=dest;place();
+    const from=kRect();
+    s.k=dest;place();flyK(from,dir);
     if(leaving){
       // ушёл из клетки CapMat: угадал прыжок или повёлся
       if(s.phase==='windup'&&!s.fake)pop(s.k,40,'предвидел');
