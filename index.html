@@ -89,7 +89,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .room{-webkit-tap-highlight-color:transparent}
 @media (hover:none) and (pointer:coarse){.kbd{display:none}}
 #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:50;padding:20px}
-.card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center}
+.card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 .card.bare{background:none;padding:0;border-radius:0;max-width:min(1200px,calc((100vh - 40px)*16/9))}
 .vids{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .vid{display:flex;align-items:center;gap:14px;width:100%;padding:8px;border:0;border-radius:14px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -104,6 +104,10 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .card h2{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:24px;margin:0 0 8px}
 .card p{margin:0 0 8px;line-height:1.5;font-size:15px}
 .card .big{font-family:Unbounded,system-ui,sans-serif;font-size:44px;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
+.promo{margin:16px 0 0;padding-top:14px;border-top:1px solid rgba(127,127,127,.35)}
+.promo p{margin:0 0 4px;font-size:15px;opacity:.75}
+.promo a{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:16px;color:inherit;text-decoration:underline;text-underline-offset:4px}
+.promo a:focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:4px}
 .lb{list-style:none;margin:10px 0 0;padding:0;text-align:left;counter-reset:n}
 .lb li{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:10px;counter-increment:n;font-size:15px}
 .lb li::before{content:counter(n);font-family:Unbounded,system-ui,sans-serif;font-size:13px;width:22px;opacity:.6}
@@ -336,9 +340,12 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     $('overlay').style.display='flex';
   }
   function closeCard(){$('overlay').style.display='none';$('overlay').dataset.view='';$('card').innerHTML=''} // вместе с содержимым удаляется и плеер YouTube, иначе видео играет дальше
+  // Под таблицей лидеров — переход на l2mammon.com (метки utm, чтобы видеть переходы из игры в аналитике)
+  const PROMO='<div class="promo"><p>Куда убежит Сармат в следующий раз?</p>'+
+    '<a href="https://l2mammon.com/?utm_source=dogoni-sarmata&utm_medium=game&utm_campaign=leaderboard" target="_blank" rel="noopener">Узнай на l2mammon.com \u2192</a></div>';
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
-    openCard('<h2>Лидеры</h2>'+boardHtml()+'<div class="row"><button class="btn red" id="closeLb">Закрыть</button></div>','lb',mode);
+    openCard('<h2>Лидеры</h2>'+boardHtml()+PROMO+'<div class="row"><button class="btn red" id="closeLb">Закрыть</button></div>','lb',mode);
     wireButtons();
   }
   function wireButtons(){
@@ -365,7 +372,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   const PLAY='<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z" fill="#fff"/></svg></span>';
   function showBase(){
     if(gain)syncSnd();
-    openCard('<h2>База</h2><ul class="vids">'+VIDEOS.map((v,i)=>
+    openCard('<h2>База Сармата</h2><ul class="vids">'+VIDEOS.map((v,i)=>
       '<li><button class="vid" data-i="'+i+'"><span class="th"><img alt="" src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg">'+PLAY+'</span><span class="tt">'+esc(v.t)+'</span></button></li>').join('')+
       '</ul><div class="row"><button class="btn red" id="closeBase">Закрыть</button></div>','base');
     $('card').querySelectorAll('.vid').forEach(b=>b.onclick=()=>showVideo(+b.dataset.i));
