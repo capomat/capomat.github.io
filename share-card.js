@@ -25,8 +25,8 @@
   // Оформление по месту. Места 4–10 — общий стиль без награды.
   const TIERS = {
     1: { accent: '#F5C542', title: 'Лучший ловец петухов', award: 'crown' },
-    2: { accent: '#C9CED6', title: 'Второй ловец петухов', award: 'silver' },
-    3: { accent: '#D08A4E', title: 'Третий ловец петухов', award: 'bronze' },
+    2: { accent: '#C9CED6', title: 'Серебряный ловец петухов', award: 'silver' },
+    3: { accent: '#D08A4E', title: 'Бронзовый ловец петухов', award: 'bronze' },
   };
   const TOP10 = { accent: '#9a9a9a', title: 'В десятке ловцов петухов', award: null };
   const tierOf = (place) => TIERS[place] || TOP10;
