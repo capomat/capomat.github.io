@@ -56,15 +56,13 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 #sndBtn.snd-off .off{display:inline}
 .kbd{display:inline-block;width:26px;height:9px;border:2px solid currentColor;border-top:0;border-radius:0 0 4px 4px;margin-left:10px;vertical-align:middle;opacity:.9}
 .btn{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:14px;line-height:1;height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;border:2px solid var(--btn);background:var(--btn);color:var(--btnfg);cursor:pointer}
-/* Кнопки: primary — главная (по умолчанию белая, в светлой теме чёрная), primary accent — красная, secondary — контурная */
-.btn.primary{background:var(--btn);border-color:var(--btn);color:var(--btnfg)}
-.btn.primary.accent{background:var(--red);border-color:var(--red);color:#fff}
+/* Кнопки: две роли — primary (красная залитая) и secondary (контурная) */
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
 .btn.secondary{background:transparent;border-color:var(--btn);color:var(--fg)}
 /* Наведение (только мышь) и нажатие — для всех ролей */
 .btn{transition:background-color .15s,border-color .15s,transform .1s}
 @media (hover:hover){
-  .btn.primary:not(:disabled):hover{background:color-mix(in srgb,var(--btn) 82%,var(--bg));border-color:color-mix(in srgb,var(--btn) 82%,var(--bg))}
-  .btn.primary.accent:not(:disabled):hover{background:color-mix(in srgb,var(--red) 82%,#000);border-color:color-mix(in srgb,var(--red) 82%,#000)}
+  .btn.primary:not(:disabled):hover{background:color-mix(in srgb,var(--red) 82%,#000);border-color:color-mix(in srgb,var(--red) 82%,#000)}
   .btn.secondary:not(:disabled):hover{background:color-mix(in srgb,var(--btn) 14%,transparent)}
 }
 .btn:not(:disabled):active{transform:scale(.97)}
@@ -145,7 +143,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .card h2{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:24px;margin:0 0 8px}
 .card p{margin:0 0 8px;line-height:1.5;font-size:15px}
 .card .big{font-family:Unbounded,system-ui,sans-serif;font-size:44px;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
-.promo{margin:16px 0 0;padding-top:14px;border-top:1px solid rgba(127,127,127,.35)}
+.promo{margin:24px 0 0;padding:24px 0 8px;border-top:1px solid rgba(127,127,127,.35)}
 .promo p{margin:0 0 4px;font-size:15px;opacity:.75}
 .promo a{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:16px;color:inherit;text-decoration:underline;text-underline-offset:4px}
 .promo a:focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:4px}
@@ -194,7 +192,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 <main>
   <div class="room" id="black"><div class="name">Lu4 Black</div><div class="field"><div class="lane cap"></div><div class="lane k"></div><div class="pop"></div></div></div>
   <div class="room" id="white"><div class="name">Lu4 White</div><div class="field"><div class="lane cap"></div><div class="lane k"></div><div class="pop"></div></div></div>
-  <button class="btn primary accent" id="startBtn" aria-label="В погоню! (пробел)">В погоню!<i class="kbd" aria-hidden="true"></i></button>
+  <button class="btn primary" id="startBtn" aria-label="В погоню! (пробел)">В погоню!<i class="kbd" aria-hidden="true"></i></button>
   <div id="overlay"><div class="card" id="card"></div></div>
 </main>
 <script src="share-card.js"></script>
@@ -423,7 +421,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       else showBoard('saved');
     }catch(e){
       myId=null;
-      openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn primary accent" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
+      openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn primary" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
@@ -527,7 +525,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
       openCard('<div class="big">CapMaT убежал</div>'+
-        '<div class="row"><button class="btn primary accent" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
+        '<div class="row"><button class="btn primary" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
