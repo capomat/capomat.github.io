@@ -27,17 +27,18 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 .stat{display:flex;flex-direction:column;line-height:1}
 .stat span{font-size:12px;opacity:.6;margin-bottom:5px}
 .stat b{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:20px;font-variant-numeric:tabular-nums;min-width:5ch}
-@media (max-width:440px){.stats{gap:16px}.stat b{font-size:18px;min-width:0}.stat #score{min-width:5ch}}
+@media (max-width:440px){.stats{gap:16px}.stat b{font-size:18px;min-width:0}.stat #score{min-width:3.9em}}
 @media (max-width:360px){.stats{gap:10px}.stat b{font-size:13px}.hdr-actions{gap:6px}.btn{padding:0 14px}}
 .hdr-actions{display:flex;gap:8px;align-items:center}
 .btn.icon{padding:0;width:44px}
 #sndBtn .off{display:none}
-#sndBtn.muted .on{display:none}
-#sndBtn.muted .off{display:inline}
+#sndBtn.snd-off .on{display:none}
+#sndBtn.snd-off .off{display:inline}
 .kbd{display:inline-block;width:26px;height:9px;border:2px solid currentColor;border-top:0;border-radius:0 0 4px 4px;margin-left:10px;vertical-align:middle;opacity:.9}
 .btn{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:14px;line-height:1;height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;border:2px solid var(--btn);background:var(--btn);color:var(--btnfg);cursor:pointer}
 .btn.ghost{background:transparent;color:var(--fg)}
 .btn.red{background:var(--red);border-color:var(--red);color:#fff}
+.btn{-webkit-tap-highlight-color:transparent}
 .btn:disabled{opacity:.3;cursor:default}
 .btn:focus-visible{outline:3px solid var(--red);outline-offset:3px}
 main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-height:0}
@@ -304,7 +305,6 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
     $('startBtn').disabled=false;$('lbBtn').disabled=false;$('sndBtn').disabled=false;
     const n10=pts%10,n100=pts%100;
     const word=(n10===1&&n100!==11)?'очко':(n10>=2&&n10<=4&&(n100<12||n100>14))?'очка':'очков';
-    const head='<div class="big">Сармат убежал</div><p style="font-size:18px">'+pts+' '+word+'</p>';
     if(qualifies(pts)){
       const place=top.filter(r=>r.score>=pts).length+1;
       openCard('<div class="big">Место #'+place+'</div><p style="font-size:18px">'+pts+' '+word+'</p>'+
@@ -317,7 +317,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
       inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go()});
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
-      openCard(head+'<p>Погоня длилась '+(s.elapsed/1000).toFixed(1)+' с.</p>'+
+      openCard('<div class="big">Сармат убежал</div>'+
         '<div class="row"><button class="btn red" id="again">Ещё раз</button><button class="btn ghost" id="later">Позже</button></div>');
       wireButtons();
     }
@@ -340,7 +340,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
   const sndBtn=$('sndBtn');
   const bufP=fetch('sound.mp3').then(r=>r.arrayBuffer()).catch(()=>null);
   function syncSnd(){
-    sndBtn.classList.toggle('muted',!soundOn);
+    sndBtn.classList.toggle('snd-off',!soundOn);
     sndBtn.setAttribute('aria-pressed',String(soundOn));
     sndBtn.setAttribute('aria-label',soundOn?'Выключить звук':'Включить звук');
     if(gain)gain.gain.setTargetAtTime(soundOn?VOLUME:0,actx.currentTime,0.05);
