@@ -153,6 +153,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .card input:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 .shareprev{display:block;width:100%;max-width:360px;aspect-ratio:1;margin:0 auto;border-radius:12px;background:#0d0d0d}
 #shareBtn{white-space:normal;height:auto;min-height:44px;padding:10px 18px;line-height:1.25}
+.card .row.stretch .btn{flex:1 1 0;min-width:0;height:auto;min-height:44px}  /* кнопки карточки делят ширину поровну */
 .card .row{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){.chip.cap.run,.chip.cap.tense{animation-duration:.5s}}
 </style>
@@ -438,7 +439,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   function showShareCard(place,nick,score){
     const seq=++cardSeq;
     openCard('<div class="shareprev" id="sharePrev"></div>'+
-      '<div class="row"><button class="btn red" id="shareBtn" disabled>Поделиться</button><button class="btn ghost" id="closeShare">Закрыть</button></div>','card');
+      '<div class="row stretch"><button class="btn red" id="shareBtn" disabled>Скопировать</button><button class="btn ghost" id="closeShare">Закрыть</button></div>','card');
     $('closeShare').onclick=closeShareCard;
     (async()=>{
       try{
@@ -457,8 +458,8 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
             url:'https://capomat.github.io/',filename:'capmat-'+place+'.png'})}catch(e){}
           if(!b.isConnected)return;
           b.disabled=false;
-          if(res==='copied')b.textContent='Скопировано — вставь в Telegram';
-          else if(res==='downloaded')b.textContent='Картинка скачана';
+          if(res==='copied')b.textContent='Скопировано!';
+          else if(res==='downloaded')b.textContent='Скачано';
         };
       }catch(e){
         if(seq===cardSeq&&$('overlay').dataset.view==='card')showBoard('saved'); // не нарисовалось — сразу рейтинг
