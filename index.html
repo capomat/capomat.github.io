@@ -62,11 +62,19 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .chip.cap.tense .leg.l2{animation:step .18s steps(1) infinite;animation-delay:-.09s}
 @keyframes step{0%{transform:translate(0,0)}50%{transform:translate(-25%,-22%)}}
 .chip.cap .lbl{color:#8a8a8a;font-size:14px}
-.chip.k{background:#9a9a9a;color:#000}
+.chip.k{background:#9a9a9a;color:#000;position:relative}
+@media (hover:hover) and (pointer:fine){
+  .chip.k::after{content:'\2190\00a0\00a0\2192';position:absolute;left:0;right:0;top:calc(100% + 8px);text-align:center;font-family:system-ui,sans-serif;font-size:22px;line-height:1;color:#8a8a8a}
+  .pop{top:84px}
+}
+/* 3. подсказка «куда тапать» на телефоне в первые секунды игры */
+.taphint{position:absolute;left:0;right:0;bottom:16%;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;opacity:.75;font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:16px}
+.taphint svg{animation:tap 0.9s ease-in-out infinite;transform-origin:50% 80%}
+@keyframes tap{0%,100%{transform:translateY(0) scale(1)}45%{transform:translateY(6px) scale(.9)}}
 .chip.cap.run{animation:twitch .2s infinite}
 .chip.cap.tense{animation:twitch .06s infinite}
 @keyframes twitch{0%,100%{transform:translate(0,0)}25%{transform:translate(-4px,1px) rotate(-3deg)}50%{transform:translate(3px,-2px)}75%{transform:translate(4px,1px) rotate(3deg)}}
-.pop{grid-row:3;grid-column:1;align-self:center;position:relative;top:48px;text-align:center;font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:clamp(14px,3vw,20px);opacity:0;pointer-events:none}
+.pop{grid-row:3;grid-column:1;align-self:center;position:relative;top:48px;text-align:center;font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:clamp(21px,4.5vw,30px);opacity:0;pointer-events:none}
 .pop.plus{color:var(--green)}
 .pop.minus{color:var(--red)}
 .pop.show{animation:pop .6s ease-out}
@@ -201,11 +209,21 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     if(capMover.parentNode!==rooms[s.cap].querySelector('.lane.cap'))rooms[s.cap].querySelector('.lane.cap').appendChild(capMover);
     capChip.querySelector('.sprite').classList.toggle('right',s.cap==='black');
     if(kChip.parentNode!==rooms[s.k].querySelector('.lane.k'))rooms[s.k].querySelector('.lane.k').appendChild(kChip);
+    updateHint();
+  }
+  // На тач-экране после старта показываем в клетке Сармата, куда тапнуть. Пропадает после первого хода.
+  const isTouch=window.matchMedia&&matchMedia('(hover:none) and (pointer:coarse)').matches;
+  const tapHint=document.createElement('div');tapHint.className='taphint';
+  tapHint.innerHTML='<svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span>тапай сюда!</span>';
+  function updateHint(){
+    const show=isTouch&&s.running&&!s.moved&&s.k!==s.cap;
+    if(!show){tapHint.remove();return}
+    if(tapHint.parentNode!==rooms[s.cap])rooms[s.cap].appendChild(tapHint);
   }
   function pop(room,pts,text){
     s.score=Math.max(0,s.score+pts);
     const el=rooms[room].querySelector('.pop');
-    el.textContent=(pts>0?'+':'−')+Math.abs(pts);
+    el.textContent=text||((pts>0?'+':'−')+Math.abs(pts));
     el.className='pop '+(pts>0?'plus':'minus');
     void el.offsetWidth;el.classList.add('show');
   }
@@ -217,7 +235,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   }}
 
   function start(){
-    reset();s.running=true;s.last=performance.now();
+    reset();s.running=true;updateHint();s.last=performance.now();
     $('overlay').style.display='none';$('overlay').dataset.view='';loadTop();
     $('startBtn').disabled=true;$('lbBtn').disabled=true;$('baseBtn').disabled=true;$('sndBtn').disabled=true;myId=null;startMusic();
     capChip.className='chip cap run';
@@ -229,14 +247,14 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     if(dest===s.k)return;
     const leaving=s.k===s.cap;
     const from=kRect();
-    s.k=dest;place();flyK(from,dir);
+    s.k=dest;s.moved=true;place();flyK(from,dir);
     if(leaving){
       // ушёл из клетки CapMat: угадал прыжок или повёлся
-      if(s.phase==='windup'&&!s.fake)pop(s.k,40,'предвидел');
-      else if(s.phase==='windup'&&s.fake)pop(s.k,-30,'повёлся');
-      else pop(s.k,-20,'мимо');
+      if(s.phase==='windup'&&!s.fake)pop(s.k,40,'Угадал');
+      else if(s.phase==='windup'&&s.fake)pop(s.k,-30);
+      else pop(s.k,-20,'Мимо');
     }else if(s.k===s.cap&&s.sinceJump<260){
-      pop(s.k,25,'чисто');
+      pop(s.k,25);
     }
   }
 
@@ -357,6 +375,12 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     openCard('<div class="player"><iframe src="https://www.youtube.com/embed/'+v.id+'?autoplay=1&playsinline=1&rel=0" title="'+esc(v.t)+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>','video');
     $('card').classList.add('bare');
   }
+  // Esc: База и видео закрываются как обычно, остальные окна (лидеры, результат, ввод ника) — как их кнопка «Закрыть»
+  function closeAnyCard(){
+    const v=$('overlay').dataset.view;
+    if(v==='base'||v==='video')return closeBase();
+    closeCard();reset();$('startBtn').focus();
+  }
   function closeBase(){closeCard();if(gain)syncSnd();$('baseBtn').focus()}
   $('baseBtn').onclick=()=>{if(!s.running)showBase()};
   // тап мимо видео (или мимо окна Базы) закрывает
@@ -367,7 +391,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   $('lbBtn').onclick=()=>{if(!s.running){lbReady=false;showBoard('menu');loadTop()}};
 
   function over(){
-    s.running=false;cancelAnimationFrame(raf);
+    s.running=false;cancelAnimationFrame(raf);updateHint();
     capChip.className='chip cap';capMover.style.transform='';
     const pts=Math.floor(s.score);
     $('startBtn').disabled=false;$('lbBtn').disabled=false;$('baseBtn').disabled=false;$('sndBtn').disabled=false;
@@ -382,7 +406,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       const go=()=>{const n=inp.value.trim().slice(0,16);if(!n){inp.focus();return}
         $('saveBtn').disabled=true;saveScore(pts,n)};
       $('saveBtn').onclick=go;
-      inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go()});
+      inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go();if(e.key==='Escape')closeAnyCard()});
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
       openCard('<div class="big">Сармат убежал</div>'+
@@ -399,7 +423,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();move(-1)}
     if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();move(1)}
     const view=$('overlay').dataset.view;
-    if(e.code==='Escape'&&(view==='base'||view==='video')){closeBase();return}
+    if(e.code==='Escape'&&$('overlay').style.display==='flex'){closeAnyCard();return}
     if(e.code==='Space'){if(view==='base'||view==='video')return;e.preventDefault();if(!s.running&&view!=='entry')start()}
   });
   window.addEventListener('keyup',e=>{const v=$('overlay').dataset.view;if(e.code==='Space'&&v!=='entry'&&v!=='base'&&v!=='video')e.preventDefault()});
