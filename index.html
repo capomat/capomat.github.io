@@ -71,11 +71,11 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .pop.minus{color:var(--red)}
 .pop.show{animation:pop .6s ease-out}
 @keyframes pop{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(24px)}}
-footer{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 16px}
-.controls{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
-footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;line-height:1.45}
+/* Старт висит поверх клеток и не занимает места в вёрстке; во время игры скрыт */
+#startBtn{position:absolute;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#startBtn:disabled{visibility:hidden}
 .room{-webkit-tap-highlight-color:transparent}
-@media (hover:none) and (pointer:coarse){.kbd-hint,.kbd{display:none}}
+@media (hover:none) and (pointer:coarse){.kbd{display:none}}
 #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:50;padding:20px}
 .card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center}
 .card.bare{background:none;padding:0;border-radius:0;max-width:min(1200px,calc((100vh - 40px)*16/9))}
@@ -134,14 +134,9 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
 <main>
   <div class="room" id="black"><div class="name">Lu4 Black</div><div class="field"><div class="lane cap"></div><div class="lane k"></div><div class="pop"></div></div></div>
   <div class="room" id="white"><div class="name">Lu4 White</div><div class="field"><div class="lane cap"></div><div class="lane k"></div><div class="pop"></div></div></div>
+  <button class="btn red" id="startBtn" aria-label="Старт (пробел)">Старт<i class="kbd" aria-hidden="true"></i></button>
   <div id="overlay"><div class="card" id="card"></div></div>
 </main>
-<footer>
-  <div class="controls">
-    <button class="btn red" id="startBtn" aria-label="Старт (пробел)">Старт<i class="kbd" aria-hidden="true"></i></button>
-  </div>
-  <p class="kbd-hint">Управляй keltaa стрелочками ← и →, чтобы догнать Сармата</p>
-</footer>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
