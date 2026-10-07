@@ -317,7 +317,7 @@ footer p{margin:0;font-size:14px;opacity:.75;text-align:center;max-width:520px;l
     $('card').className='card';$('card').innerHTML=html;$('overlay').dataset.view=view||'';$('overlay').dataset.mode=mode||'';
     $('overlay').style.display='flex';
   }
-  function closeCard(){$('overlay').style.display='none';$('overlay').dataset.view=''}
+  function closeCard(){$('overlay').style.display='none';$('overlay').dataset.view='';$('card').innerHTML=''} // вместе с содержимым удаляется и плеер YouTube, иначе видео играет дальше
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
     openCard('<h2>Лидеры</h2>'+boardHtml()+'<div class="row"><button class="btn red" id="closeLb">Закрыть</button></div>','lb',mode);
