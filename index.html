@@ -451,13 +451,15 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
         const img=new Image();img.className='shareprev';img.alt='Карточка: место #'+place+', '+score+' '+SarmatCard.pointsWord(score);img.src=cardUrl;
         $('sharePrev').replaceWith(img);
         const b=$('shareBtn');b.disabled=false;b.focus();
+        // «Скопировано!» держится 2 с (кнопка в это время не реагирует, но не тускнеет), потом снова «Скопировать»
+        let busy=false;
         b.onclick=async()=>{
-          b.disabled=true;let res='cancelled';
+          if(busy)return;busy=true;let res='cancelled';
           try{res=await copyCard(blob,'capmat-'+place+'.png')}catch(e){}
           if(!b.isConnected)return;
-          b.disabled=false;
-          if(res==='copied')b.textContent='Скопировано!';
-          else if(res==='downloaded')b.textContent='Скачано';
+          if(res==='cancelled'){busy=false;return}
+          b.textContent=res==='copied'?'Скопировано!':'Скачано';
+          setTimeout(()=>{if(b.isConnected)b.textContent='Скопировать';busy=false},2000);
         };
       }catch(e){
         if(seq===cardSeq&&$('overlay').dataset.view==='card')showBoard('saved'); // не нарисовалось — сразу рейтинг
