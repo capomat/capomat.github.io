@@ -73,6 +73,9 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 @keyframes pop{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(24px)}}
 /* Старт висит поверх клеток и не занимает места в вёрстке; во время игры скрыт */
 #startBtn{position:absolute;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#startBtn{height:66px;font-size:21px;padding:0 27px}  /* в 1.5 раза больше обычной кнопки */
+@media (max-width:560px){#startBtn{left:20px;right:20px;transform:none}}
+@media (max-height:600px){#startBtn{bottom:calc(8px + env(safe-area-inset-bottom,0px))}}  /* низкие экраны: не наезжать на keltaa */
 #startBtn:disabled{visibility:hidden}
 .room{-webkit-tap-highlight-color:transparent}
 @media (hover:none) and (pointer:coarse){.kbd{display:none}}
