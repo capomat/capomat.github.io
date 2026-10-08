@@ -21,22 +21,22 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#d9d9d9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#262626" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#E1DDD1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#2D291F" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#ff2d2d; --cap:#2f6bff; --green:#1fbf4a;
-  --accent:#F5C441; --ink:#100C02; --paper:#FFFBF1; --nav:#F5EBD1;  /* палитра: акцент, «чёрный», «белый», шапка */
-  --bg:#d9d9d9; --fg:var(--ink); --btn:var(--ink); --btnfg:var(--paper);
+  --accent:#F3BB26; --ink:#100C02; --paper:#FFFBF1; --nav:#F5EBD1;  /* палитра: акцент, «чёрный», «белый», шапка */
+  --bg:#E1DDD1; --fg:var(--ink); --btn:var(--ink); --btnfg:var(--paper);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#262626;--fg:var(--paper);--btn:var(--paper);--btnfg:var(--ink)}}
-:root[data-theme="dark"]{--bg:#262626;--fg:var(--paper);--btn:var(--paper);--btnfg:var(--ink)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2D291F;--fg:var(--paper);--btn:var(--paper);--btnfg:var(--ink)}}
+:root[data-theme="dark"]{--bg:#2D291F;--fg:var(--paper);--btn:var(--paper);--btnfg:var(--ink)}
 *,*::before,*::after{box-sizing:inherit}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--fg);font-family:Manrope,system-ui,sans-serif;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none;touch-action:manipulation}
@@ -88,20 +88,20 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .chip.cap{background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px}
 .chip.cap .sprite{position:relative;display:block;margin-bottom:calc(var(--bh)*.26)}
 .chip.cap .sprite.right{transform:scaleX(-1)}
-.chip.cap .body{display:block;height:var(--bh);width:auto;image-rendering:pixelated;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));pointer-events:none;position:relative;z-index:1}
+.chip.cap .body{display:block;height:var(--bh);width:auto;image-rendering:pixelated;filter:drop-shadow(0 4px 10px rgba(16,12,2,.35));pointer-events:none;position:relative;z-index:1}
 .chip.cap .leg{position:absolute;top:88%;width:32%;height:auto;image-rendering:pixelated;pointer-events:none}
 .chip.cap .leg.l1{left:14%}
 .chip.cap .leg.l2{left:34%}
 .chip.cap.tense .leg.l1{animation:step .18s steps(1) infinite}
 .chip.cap.tense .leg.l2{animation:step .18s steps(1) infinite;animation-delay:-.09s}
 @keyframes step{0%{transform:translate(0,0)}50%{transform:translate(-25%,-22%)}}
-.chip.cap .lbl,.chip.k .lbl{color:#8a8a8a;font-size:21px}
+.chip.cap .lbl,.chip.k .lbl{color:#958F7F;font-size:21px}
 /* keltaa: аватар без подложки + серая подпись, как у CapMaTa; на чёрной клетке смотрит вправо, на белой — влево */
-.chip.k{background:none;padding:0;color:#8a8a8a;position:relative;display:flex;flex-direction:column;align-items:center;gap:4px}
-.chip.k .ava{display:block;height:var(--kh);width:auto;pointer-events:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
+.chip.k{background:none;padding:0;color:#958F7F;position:relative;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chip.k .ava{display:block;height:var(--kh);width:auto;pointer-events:none;filter:drop-shadow(0 4px 10px rgba(16,12,2,.35))}
 .chip.k.flip .ava{transform:scaleX(-1)}
 @media (hover:hover) and (pointer:fine){
-  .chip.k::after{content:'\2190\00a0\00a0\2192';position:absolute;left:0;right:0;top:calc(100% + 8px);text-align:center;font-family:system-ui,sans-serif;font-size:22px;line-height:1;color:#8a8a8a}
+  .chip.k::after{content:'\2190\00a0\00a0\2192';position:absolute;left:0;right:0;top:calc(100% + 8px);text-align:center;font-family:system-ui,sans-serif;font-size:22px;line-height:1;color:#958F7F}
   .field .pop{top:calc(var(--kh)/2 + 86px)}
 }
 /* 3. подсказка «куда тапать» на телефоне в первые секунды игры */
@@ -118,7 +118,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 @media (max-height:600px) and (hover:none){.pop{top:calc(var(--kh)/2 + 46px)}}
 @keyframes pop{0%,45%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(24px)}}
 /* Старт висит поверх клеток и не занимает места в вёрстке; во время игры скрыт */
-#startBtn{position:absolute;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#startBtn{position:absolute;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;box-shadow:0 6px 20px rgba(16,12,2,.35)}
 #startBtn{height:66px;font-size:21px;padding:0 27px}  /* в 1.5 раза больше обычной кнопки */
 @media (max-width:560px){#startBtn{left:20px;right:20px;transform:none}
   /* место под «Старт» зарезервировано всегда, чтобы кнопка не закрывала keltaa и вёрстка не прыгала при старте */
@@ -129,12 +129,12 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 #startBtn:disabled{visibility:hidden}
 .room{-webkit-tap-highlight-color:transparent}
 @media (hover:none) and (pointer:coarse){.kbd{display:none}}
-#overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:50;padding:20px}
+#overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(16,12,2,.7);z-index:50;padding:20px}
 .card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 .card.bare{background:none;padding:0;border-radius:0;max-width:min(1200px,calc((100vh - 40px)*16/9))}
 .vids{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .vid{display:flex;align-items:center;gap:14px;width:100%;padding:8px;border:0;border-radius:14px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.vid:hover{background:rgba(127,127,127,.15)}
+.vid:hover{background:rgba(140,133,114,.15)}
 .vid:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .vid .th{position:relative;flex:none;width:144px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--ink)}
 .vid .th img{display:block;width:100%;height:100%;object-fit:cover}
@@ -146,7 +146,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .card h2{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:24px;margin:0 0 8px}
 .card p{margin:0 0 8px;line-height:1.5;font-size:15px}
 .card .big{font-family:Unbounded,system-ui,sans-serif;font-size:44px;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
-.promo{margin:24px 0 0;padding:24px 0 8px;border-top:1px solid rgba(127,127,127,.35)}
+.promo{margin:24px 0 0;padding:24px 0 8px;border-top:1px solid rgba(140,133,114,.35)}
 .promo p{margin:0 0 4px;font-size:15px;opacity:.75}
 .promo a{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:16px;color:inherit;text-decoration:underline;text-underline-offset:4px}
 .promo a:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
@@ -160,7 +160,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .lb li.entry{background:var(--green);color:var(--paper);align-items:center}
 .lb li.entry::before{opacity:1}
 .lb li.entry input{margin:0;flex:1;min-width:0;padding:6px 10px;font-size:15px;border-color:var(--paper);color:var(--paper);border-radius:8px}
-.lb li.entry input::placeholder{color:rgba(255,255,255,.75)}
+.lb li.entry input::placeholder{color:rgba(255,251,241,.75)}
 .muted{opacity:.6;font-size:14px}
 .card input{width:100%;margin-top:10px;font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:2px solid var(--fg);background:transparent;color:var(--fg)}
 .card input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
