@@ -123,23 +123,23 @@
     fitFont(ctx, '#' + place, 800, 260, 160, 460);
     textInBox(ctx, '#' + place, 72, 68, 234);
 
-    // Три группы сверху вниз: место | ник + статус | очки; между группами на 4 px больше, чем было
+    // Три группы сверху вниз: место | ник + статус | очки; между группами на 8 px больше, чем было
     // ник — главное: 96 px, уменьшается до 40 px; не заходит на корону/голову петуха
     const name = String(nick || '').trim() || 'Аноним';
     const nickPx = fitFont(ctx, name, 800, 96, 40, 740);
     ctx.fillStyle = WHITE;
-    textInBox(ctx, clip(ctx, name, 740), 72, 320 + (96 - nickPx) / 2, nickPx);
+    textInBox(ctx, clip(ctx, name, 740), 72, 324 + (96 - nickPx) / 2, nickPx);
 
     // статус, одной строкой
     ctx.fillStyle = tier.accent;
     ctx.font = UNB(500, 40);
-    textInBox(ctx, tier.title, 72, 432, 46);
+    textInBox(ctx, tier.title, 72, 436, 46);
 
     // очки (вторично, 64 px) + слово, по общей базовой линии
     const s = String(Math.max(0, Math.floor(score)));
     ctx.fillStyle = WHITE;
     ctx.font = UNB(800, 64);
-    const baseline = textInBox(ctx, s, 72, 502, 64);
+    const baseline = textInBox(ctx, s, 72, 510, 64);
     const sw = ctx.measureText(s).width;
     ctx.fillStyle = GREY;
     ctx.font = UNB(500, 36);
