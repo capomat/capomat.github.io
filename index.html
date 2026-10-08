@@ -81,6 +81,7 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 @media (max-width:560px){#startBtn:not(:disabled):active{transform:scale(.97)}}
 .btn{-webkit-tap-highlight-color:transparent}
 .btn:disabled{opacity:.3;cursor:default}
+header .btn:disabled{visibility:hidden}  /* во время забега кнопки шапки не тускнеют, а исчезают, место под ними остаётся */
 .btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-height:0}
 .room{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:0}
