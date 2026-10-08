@@ -123,26 +123,26 @@
     fitFont(ctx, '#' + place, 800, 260, 160, 460);
     textInBox(ctx, '#' + place, 72, 68, 234);
 
-    // ник: 64 px, уменьшается до 36 px; не заходит на корону/голову петуха
+    // ник — главное: 96 px, уменьшается до 40 px; не заходит на корону/голову петуха
     const name = String(nick || '').trim() || 'Аноним';
-    const nickPx = fitFont(ctx, name, 800, 64, 36, 740);
+    const nickPx = fitFont(ctx, name, 800, 96, 40, 740);
     ctx.fillStyle = WHITE;
-    textInBox(ctx, clip(ctx, name, 740), 72, 320 + (64 - nickPx) / 2, nickPx);
+    textInBox(ctx, clip(ctx, name, 740), 72, 316 + (96 - nickPx) / 2, nickPx);
 
     // статус, одной строкой
     ctx.fillStyle = tier.accent;
     ctx.font = UNB(500, 40);
-    textInBox(ctx, tier.title, 72, 402, 46);
+    textInBox(ctx, tier.title, 72, 428, 46);
 
-    // очки + слово, по общей базовой линии
+    // очки (вторично, 64 px) + слово, по общей базовой линии
     const s = String(Math.max(0, Math.floor(score)));
     ctx.fillStyle = WHITE;
-    ctx.font = UNB(800, 96);
-    const baseline = textInBox(ctx, s, 72, 478, 96);
+    ctx.font = UNB(800, 64);
+    const baseline = textInBox(ctx, s, 72, 494, 64);
     const sw = ctx.measureText(s).width;
     ctx.fillStyle = GREY;
-    ctx.font = UNB(500, 40);
-    ctx.fillText(pointsWord(Number(s)), 72 + sw + 16, baseline);
+    ctx.font = UNB(500, 36);
+    ctx.fillText(pointsWord(Number(s)), 72 + sw + 14, baseline);
 
     // нижняя полоса
     ctx.fillStyle = tier.accent;
