@@ -678,8 +678,12 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   }
   ['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,wakeAudio,true));
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){hiddenAt=performance.now();return}
-    if(musicStarted&&performance.now()-hiddenAt>30000)needRebuild=true; // после долгого фона пересоздадим при первом касании
+    if(document.hidden){
+      hiddenAt=performance.now();
+      if(isTouch&&actx&&actx.state==='running')actx.suspend().catch(()=>{}); // на телефоне — пауза, когда браузер свёрнут
+      return;
+    }
+    if(isTouch&&musicStarted&&performance.now()-hiddenAt>30000)needRebuild=true; // телефон: после долгого фона пересоздадим при первом касании
     else wakeAudio();
   });
   // музыка включается с первым стартом игры в этой сессии и дальше не выключается
