@@ -174,16 +174,22 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .promo a{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:16px;color:inherit;text-decoration:underline;text-underline-offset:4px}
 .promo a:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
 .lb{list-style:none;margin:10px 0 0;padding:0;text-align:left;counter-reset:n}
-.lb li{display:flex;gap:10px;align-items:baseline;padding:8px 10px;border-radius:10px;counter-increment:n;font-size:15px}
+.lb li{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;counter-increment:n;font-size:15px}
 .lb li::before{content:counter(n);font-family:Unbounded,system-ui,sans-serif;font-size:13px;width:22px;opacity:.6}
 .lb li .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb li .pt{font-family:Unbounded,system-ui,sans-serif;font-variant-numeric:tabular-nums}
-.lb li.you{background:var(--green);color:var(--paper)}
+/* 1–3 места: награды вместо номера (те же, что на карточке) */
+.lb li.medal::before{content:none}
+.lb .mi{flex:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center}
+.lb .mi img{display:block;image-rendering:pixelated}
+.lb .mi .crown{width:24px;height:14px}
+.lb .mi .med{width:17px;height:20px}
+/* своя строка — мягкая подложка акцентного цвета */
+.lb li.you{background:color-mix(in srgb,var(--accent) 24%,transparent)}
 .lb li.you::before{opacity:1}
-.lb li.entry{background:var(--green);color:var(--paper);align-items:center}
+.lb li.entry{background:color-mix(in srgb,var(--accent) 24%,transparent);align-items:center}
 .lb li.entry::before{opacity:1}
-.lb li.entry input{margin:0;flex:1;min-width:0;padding:6px 10px;font-size:15px;border-color:var(--paper);color:var(--paper);border-radius:8px}
-.lb li.entry input::placeholder{color:rgba(255,251,241,.75)}
+.lb li.entry input{margin:0;flex:1;min-width:0;padding:6px 10px;font-size:15px;border-radius:8px}
 .muted{opacity:.6;font-size:14px}
 .card input{width:100%;margin-top:10px;font:inherit;font-size:16px;padding:12px 14px;border-radius:12px;border:2px solid var(--fg);background:transparent;color:var(--fg)}
 .card input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -395,7 +401,8 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   function boardHtml(pending){
     if(!db)return '<p class="muted">Таблица лидеров сейчас недоступна.</p>';
     if(!lbReady)return '<p class="muted">Загружаю…</p>';
-    const row=r=>'<li class="'+(r.id===myId?'you':'')+'"><span class="nm">'+esc(r.name||'Аноним')+'</span><span class="pt">'+(r.score|0)+'</span></li>';
+    const MEDALS=['<img class="crown" src="assets/crown.svg" alt="1">','<img class="med" src="assets/silver.svg" alt="2">','<img class="med" src="assets/bronze.svg" alt="3">'];
+    const row=(r,i)=>'<li class="'+[r.id===myId?'you':'',i<3?'medal':''].join(' ').trim()+'">'+(i<3?'<span class="mi">'+MEDALS[i]+'</span>':'')+'<span class="nm">'+esc(r.name||'Аноним')+'</span><span class="pt">'+(r.score|0)+'</span></li>';
     if(pending){
       // строка с полем для ника вставляется на своё место
       const i=top.filter(r=>r.score>=pending.pts).length;
