@@ -53,6 +53,14 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 .stat b{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:20px;font-variant-numeric:tabular-nums;min-width:5ch}
 @media (max-width:560px){.bar-row{grid-template-columns:1fr;height:auto;row-gap:10px}.stats{gap:16px}.stat b{min-width:0}.stat #score{min-width:3.9em}}
 .hdr-actions{display:flex;gap:8px;align-items:center}
+/* Десктоп: шапка в одну строку — заголовок слева, счёт по центру, кнопки справа */
+@media (min-width:900px){
+  header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:24px}
+  header .bar-row{display:contents}
+  header h1{grid-column:1}
+  header .stats{grid-column:2;justify-self:center}
+  header .hdr-actions{grid-column:3;justify-self:end}
+}
 .btn.icon{padding:0;width:44px}
 #sndBtn .off{display:none}
 #sndBtn.snd-off .on{display:none}
@@ -176,7 +184,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
   <h1><a href="./" class="home"><img class="logo" src="logo.svg" alt="" width="37" height="28">Догони CapMaTa</a></h1>
   <div class="bar-row">
     <div class="stats">
-      <div class="stat"><span>Счёт</span><b id="score">0</b></div>
+      <div class="stat"><span>Твой счёт</span><b id="score">0</b></div>
       <div class="stat"><span>Рекорд</span><b id="best">—</b></div>
     </div>
     <div class="hdr-actions">
