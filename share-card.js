@@ -108,12 +108,6 @@
     ctx.fillStyle = BG;
     ctx.fillRect(0, 0, W, H);
 
-    // адрес сайта, справа сверху
-    ctx.font = MONO(44);
-    ctx.fillStyle = GREY;
-    ctx.textAlign = 'right';
-    textInBox(ctx, site || config.site, 1008, 60, 58);
-    ctx.textAlign = 'left';
 
     // петух (смотрит вправо) + награда; рисуется ДО текста, текст поверх
     drawRooster(ctx, a, tier.award, 572, 431);
@@ -150,7 +144,12 @@
     ctx.fillRect(0, 930, W, 150);
     ctx.fillStyle = BG;
     ctx.font = UNB(800, 64);
-    textInBox(ctx, 'Словишь CapMaTa?', 72, 965, 80);
+    textInBox(ctx, 'Словишь CapMaTa?', 72, 946, 72);
+    // адрес сайта — под вопросом, со стрелкой
+    ctx.font = MONO(36);
+    ctx.globalAlpha = 0.75;
+    textInBox(ctx, '→ ' + (site || config.site), 72, 1020, 40);
+    ctx.globalAlpha = 1;
 
     return c;
   }
