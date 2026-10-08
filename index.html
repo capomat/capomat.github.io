@@ -65,7 +65,9 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 #sndBtn .off{display:none}
 #sndBtn.snd-off .on{display:none}
 #sndBtn.snd-off .off{display:inline}
-.kbd{display:inline-block;width:26px;height:9px;border:2px solid currentColor;border-top:0;border-radius:0 0 4px 4px;margin-left:10px;vertical-align:middle;opacity:.9}
+/* Иконка пробела: знак ⎵ на еле заметной «клавише» */
+.kbd{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:22px;margin-left:10px;border-radius:6px;background:color-mix(in srgb,currentColor 12%,transparent);box-shadow:inset 0 -2px 0 color-mix(in srgb,currentColor 16%,transparent)}
+.kbd::before{content:'';width:18px;height:6px;margin-top:-2px;border:2px solid currentColor;border-top:0;border-radius:0 0 3px 3px}
 .btn{font-family:Unbounded,system-ui,sans-serif;font-weight:500;font-size:14px;line-height:1;height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;border:2px solid var(--btn);background:var(--btn);color:var(--btnfg);cursor:pointer}
 /* Кнопки: две роли — primary (красная залитая) и secondary (контурная) */
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ink)}
@@ -433,7 +435,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       else showBoard('saved');
     }catch(e){
       myId=null;
-      openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn primary" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
+      openCard('<h2>Не сохранилось</h2><p>Не получилось записать результат в таблицу. Проверь интернет.</p><div class="row"><button class="btn primary" id="again" aria-label="Ещё раз (пробел)">Ещё раз<i class="kbd" aria-hidden="true"></i></button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
@@ -537,7 +539,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
       openCard('<div class="big">CapMaT убежал</div>'+
-        '<div class="row"><button class="btn primary" id="again">Ещё раз</button><button class="btn secondary" id="later">Позже</button></div>');
+        '<div class="row"><button class="btn primary" id="again" aria-label="Ещё раз (пробел)">Ещё раз<i class="kbd" aria-hidden="true"></i></button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
