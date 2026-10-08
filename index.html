@@ -195,6 +195,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .shareprev{display:block;width:100%;max-width:360px;aspect-ratio:1;margin:0 auto;border-radius:12px;background:#0d0d0d}
 #shareBtn{white-space:normal;height:auto;min-height:44px;padding:10px 18px;line-height:1.25}
 .card .row .btn{flex:1 1 0;min-width:0;height:auto;min-height:44px}  /* в окнах: одна кнопка — на всю ширину, две — пополам */
+.card .howto{margin:10px auto 0;max-width:320px;font-size:15px;line-height:1.45;opacity:.8}  /* правила под заголовком проигрыша */
 .card .row{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}  /* единый отступ над кнопками во всех окнах */
 @media (prefers-reduced-motion:reduce){.chip.cap.run,.chip.cap.tense{animation-duration:.5s}}
 </style>
@@ -557,6 +558,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
       openCard('<div class="big">CapMaT убежал</div>'+
+        '<p class="howto">Держи keltaa рядом с петухом. Петух прыгнул — '+(isTouch?'тапни по его клетке':'жми ← или →')+', чтобы перебежать следом. Не успел за секунду — убежал.</p>'+
         '<div class="row"><button class="btn primary" id="again" aria-label="Ещё раз (пробел)">Ещё раз<i class="kbd" aria-hidden="true"></i></button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
