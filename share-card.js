@@ -141,14 +141,14 @@
 
     // нижняя полоса
     ctx.fillStyle = tier.accent;
-    ctx.fillRect(0, 930, W, 150);
+    ctx.fillRect(0, 916, W, 164);  // полоса выше на 14 px — под крупный адрес
     ctx.fillStyle = BG;
     ctx.font = UNB(800, 64);
-    textInBox(ctx, 'Словишь CapMaTa?', 72, 946, 72);
+    textInBox(ctx, 'Словишь CapMaTa?', 72, 934, 72);
     // адрес сайта — под вопросом, со стрелкой
-    ctx.font = MONO(36);
+    ctx.font = MONO(42);
     ctx.globalAlpha = 0.75;
-    textInBox(ctx, '→ ' + (site || config.site), 72, 1020, 40);
+    textInBox(ctx, '→ ' + (site || config.site), 72, 1012, 46);
     ctx.globalAlpha = 1;
 
     return c;
