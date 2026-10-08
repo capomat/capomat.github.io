@@ -96,7 +96,7 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 .btn:disabled{opacity:.3;cursor:default}
 header .btn:disabled{visibility:hidden}  /* во время забега кнопки шапки не тускнеют, а исчезают, место под ними остаётся */
 .btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
-main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-height:0}
+main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px;position:relative;min-height:0}  /* отступы 8px: слева, справа, снизу и между секциями */
 .room{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:0;border-radius:16px}
 .field{--bh:clamp(70px,13vh,120px);--kh:calc(var(--bh)*1.1);flex:1;position:relative;display:grid;--r2:calc(var(--bh)*1.26 + 34px);--r3:calc(var(--kh) + 36px);grid-template-rows:minmax(0,1fr) minmax(var(--r2),1fr) minmax(var(--r3),1fr) minmax(0,1fr);row-gap:calc(var(--bh)*.35);min-height:0}
 #black{background:var(--ink);color:var(--paper)}
