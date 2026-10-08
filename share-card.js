@@ -16,7 +16,7 @@
   const config = {
     assetsBase: 'assets/', // rooster.png, leg.png, crown.svg, silver.svg, bronze.svg
     fontsBase: 'fonts/',   // Unbounded.ttf, JetBrainsMono.ttf
-    site: 'capomat.github.io',
+    site: 'capmat.org',
   };
 
   const W = 1080, H = 1080;
