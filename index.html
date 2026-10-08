@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@500;700&family=Saira+Condensed:wght@800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --red:#ff2d2d; --cap:#2f6bff; --green:#1fbf4a;
+  --red:#EF452E; --cap:#2f6bff; --green:#34B244;  /* красный и зелёный чуть теплее — под винтажную палитру */
   --accent:#F0BB2F; --ink:#100C02; --nav:#0B0A07; --room-black:#211F19; --ivory:#F2E9D4; --room-white:#F6EFE0;  /* палитра: акцент, «чёрный», фон страницы, чёрная секция, слоновая кость, белая секция */
   /* роли: окна лежат на цвете чёрной секции, текст и контуры — слоновая кость. Сайт тёмный при любой теме системы */
   --bg:var(--room-black); --fg:var(--ivory); --btn:var(--ivory); --btnfg:var(--ink);
@@ -76,8 +76,8 @@ body.playing #tgBtn{visibility:hidden}  /* во время забега пряч
   header .hdr-actions{grid-column:3;justify-self:end}
 }
 .btn.icon{padding:0;width:44px}
+/* выключенный звук: та же иконка, перечёркнутая красной диагональю внутри кнопки */
 #sndBtn .off{display:none}
-#sndBtn.snd-off .on{display:none}
 #sndBtn.snd-off .off{display:inline}
 /* Иконка пробела: знак ⎵ на еле заметной «клавише» */
 .kbd{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:22px;margin-left:10px;border-radius:6px;background:color-mix(in srgb,currentColor 12%,transparent)}
@@ -227,7 +227,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>
           <g class="on"><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></g>
-          <g class="off"><path d="M16 9l5 6M21 9l-5 6"/></g>
+          <line class="off" x1="3" y1="3" x2="21" y2="21" stroke="var(--red)" stroke-width="3.2"/>
         </svg>
       </button></div>
       <button class="btn secondary" id="lbBtn">Ловцы</button>
