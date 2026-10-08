@@ -399,7 +399,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     if(pending){
       // строка с полем для ника вставляется на своё место
       const i=top.filter(r=>r.score>=pending.pts).length;
-      const entry='<li class="entry"><input id="nameIn" maxlength="16" placeholder="Твой ник"><span class="pt">'+pending.pts+'</span></li>';
+      const entry='<li class="entry"><input id="nameIn" maxlength="50" placeholder="Твой ник"><span class="pt">'+pending.pts+'</span></li>';
       const rows=top.map(row);rows.splice(i,0,entry);
       return '<ol class="lb">'+rows.slice(0,10).join('')+'</ol>';
     }
@@ -541,10 +541,10 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
       prepareCard(); // шрифты и картинки карточки грузятся, пока игрок вводит ник
       const place=top.filter(r=>r.score>=pts).length+1;
       openCard('<div class="big">Место #'+place+'</div><p style="font-size:18px">'+pts+' '+word+'</p>'+
-        '<input id="nameIn" maxlength="16" placeholder="Введи никнейм">'+
+        '<input id="nameIn" maxlength="50" placeholder="Введи никнейм">'+
         '<div class="row"><button class="btn primary" id="saveBtn">Сохранить</button><button class="btn secondary" id="cancelBtn">Закрыть</button></div>','entry');
       const inp=$('nameIn');inp.focus();
-      const go=()=>{const n=inp.value.trim().slice(0,16);if(!n){inp.focus();return}
+      const go=()=>{const n=inp.value.trim().slice(0,50);if(!n){inp.focus();return}
         $('saveBtn').disabled=true;saveScore(pts,n)};
       $('saveBtn').onclick=go;
       inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go();if(e.key==='Escape')closeAnyCard()});
