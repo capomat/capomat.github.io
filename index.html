@@ -476,7 +476,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     else if(h==='leaders'){lbReady=false;showBoard('menu');loadTop()}
   }
   window.addEventListener('hashchange',routeHash);
+  let cardOpenedAt=0;
   function openCard(html,view,mode){
+    cardOpenedAt=performance.now();
     setHash(view==='lb'?'leaders':(view==='base'||view==='video')?'base':'');
     $('card').className='card';$('card').innerHTML=html;$('overlay').dataset.view=view||'';$('overlay').dataset.mode=mode||'';
     $('overlay').style.display='flex';
@@ -584,10 +586,12 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   }
   function closeBase(){closeCard();wakeAudio();if(gain)syncSnd();$('baseBtn').focus()}
   $('baseBtn').onclick=()=>{if(!s.running)showBase()};
-  // тап мимо видео (или мимо окна Базы) закрывает
+  // Тап/клик по затемнению вокруг любого окна закрывает его — так же, как «Закрыть» или Esc.
+  // Первые 0.4 с после открытия игнорируем: иначе тап по полю в момент проигрыша сразу закроет окно.
   $('overlay').addEventListener('click',e=>{
+    if(performance.now()-cardOpenedAt<400)return;
     const v=$('overlay').dataset.view;
-    if((v==='video'||v==='base')&&(e.target===$('overlay')||(v==='video'&&e.target===$('card'))))closeBase();
+    if(e.target===$('overlay')||(v==='video'&&e.target===$('card')))closeAnyCard();
   });
   $('lbBtn').onclick=()=>{if(!s.running){lbReady=false;showBoard('menu');loadTop()}};
 
