@@ -93,7 +93,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
 .chip.cap.tense .leg.l2{animation:step .18s steps(1) infinite;animation-delay:-.09s}
 @keyframes step{0%{transform:translate(0,0)}50%{transform:translate(-25%,-22%)}}
 .chip.cap .lbl,.chip.k .lbl{color:#8a8a8a;font-size:21px}
-/* keltaa: аватар без подложки + серая подпись, как у CapMaTa; на белой клетке смотрит влево */
+/* keltaa: аватар без подложки + серая подпись, как у CapMaTa; на чёрной клетке смотрит вправо, на белой — влево */
 .chip.k{background:none;padding:0;color:#8a8a8a;position:relative;display:flex;flex-direction:column;align-items:center;gap:4px}
 .chip.k .ava{display:block;height:var(--kh);width:auto;pointer-events:none;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35))}
 .chip.k.flip .ava{transform:scaleX(-1)}
@@ -258,7 +258,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;position:relative;min-hei
     if(capMover.parentNode!==rooms[s.cap].querySelector('.lane.cap'))rooms[s.cap].querySelector('.lane.cap').appendChild(capMover);
     capChip.querySelector('.sprite').classList.toggle('right',s.cap==='black');
     if(kChip.parentNode!==rooms[s.k].querySelector('.lane.k'))rooms[s.k].querySelector('.lane.k').appendChild(kChip);
-    kChip.classList.toggle('flip',s.k==='white');
+    kChip.classList.toggle('flip',s.k==='black'); // на картинке смотрит влево: на чёрной клетке зеркалим, чтобы смотрел вправо
     updateHint();
   }
   // На тач-экране после старта показываем в клетке CapMaTa, куда тапнуть. Пропадает после первого хода.
