@@ -509,6 +509,16 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px
     })();
   }
   function closeShareCard(){showBoard('saved')}
+  // ОТЛАДКА: кнопки карточек #1–#4. Только локально — на capomat.github.io не показываются, в таблицу ничего не пишут
+  if(location.hostname!=='capomat.github.io'){
+    const dbg=document.createElement('div');
+    dbg.style.cssText='position:fixed;left:8px;bottom:8px;z-index:60;display:flex;gap:6px;padding:6px;border-radius:12px;background:rgba(16,12,2,.8)';
+    [[1,'keltaa',1874],[2,'bombimba',1412],[3,'пропер',1096],[4,'zoomer2',640]].forEach(([pl,nick,sc])=>{
+      const b=document.createElement('button');b.className='btn secondary';b.textContent='#'+pl;b.style.cssText='height:32px;padding:0 12px;font-size:12px';
+      b.onclick=()=>{if(!s.running)showShareCard(pl,nick,sc)};dbg.appendChild(b);
+    });
+    document.body.appendChild(dbg);
+  }
   // «Скопировать»: картинка в буфер обмена на любом устройстве (без системного меню «Поделиться»).
   // Вызывается прямо из клика — Safari разрешает запись в буфер только так. Не вышло — PNG скачивается.
   async function copyCard(blob,filename){
