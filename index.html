@@ -640,35 +640,52 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   // ---------- Фоновая музыка ----------
   // Громкость через Web Audio (GainNode): у <audio>.volume на iPhone/iPad громкость не меняется вообще.
   const VOLUME=0.1;
-  let soundOn=true,musicStarted=false,actx=null,gain=null;
+  let soundOn=true,musicStarted=false,actx=null,gain=null,needRebuild=false,hiddenAt=0;
   const sndBtn=$('sndBtn');
-  const bufP=fetch('sound.mp3').then(r=>r.arrayBuffer()).catch(()=>null);
+  const bufP=fetch('sound.mp3').then(r=>r.arrayBuffer()).catch(()=>null); // скачиваем один раз, при пересоздании звука берём копию
   function syncSnd(){
     sndBtn.classList.toggle('snd-off',!soundOn);
     sndBtn.setAttribute('aria-pressed',String(soundOn));
     sndBtn.setAttribute('aria-label',soundOn?'Выключить звук':'Включить звук');
-    if(gain)gain.gain.setTargetAtTime(soundOn?VOLUME:0,actx.currentTime,0.05);
+    if(gain&&actx)gain.gain.setTargetAtTime(soundOn?VOLUME:0,actx.currentTime,0.05);
   }
   sndBtn.onclick=()=>{soundOn=!soundOn;syncSnd();sndBtn.blur()};
-  // музыка включается с первым стартом игры в этой сессии и дальше не выключается
-  // iPhone приостанавливает Web Audio, когда браузер свёрнут, экран заблокирован или играет видео YouTube.
-  // Сам звук не возвращается — будим его при любом действии игрока и при возврате на вкладку.
-  function wakeAudio(){if(actx&&actx.state!=='running')actx.resume().catch(()=>{})}
-  ['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,wakeAudio,true));
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)wakeAudio()});
-  async function startMusic(){
-    wakeAudio();
-    if(musicStarted)return;musicStarted=true;
+  // Создать звук с нуля: новый AudioContext + музыка по кругу. Вызывается при первом старте
+  // и когда старый звук умер (iPhone после долгого фона закрывает звуковой канал насовсем).
+  async function buildAudio(){
+    try{if(actx&&actx.state!=='closed')actx.close().catch(()=>{})}catch(e){}
+    actx=null;gain=null;
     // Safari 17+: тип «воспроизведение» — музыка играет и при включённом беззвучном режиме
     try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
     try{
-      actx=new (window.AudioContext||window.webkitAudioContext)();
-      gain=actx.createGain();gain.gain.value=soundOn?VOLUME:0;gain.connect(actx.destination);
-      if(actx.state==='suspended')actx.resume();
-      const raw=await bufP;if(!raw)return;
-      const buf=await new Promise((ok,bad)=>actx.decodeAudioData(raw,ok,bad));
-      const src=actx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);src.start();
+      const c=new (window.AudioContext||window.webkitAudioContext)();actx=c;
+      const g=c.createGain();gain=g;g.gain.value=soundOn?VOLUME:0;g.connect(c.destination);
+      if(c.state!=='running')c.resume().catch(()=>{});
+      const raw=await bufP;if(!raw||actx!==c)return;
+      const buf=await new Promise((ok,bad)=>c.decodeAudioData(raw.slice(0),ok,bad));
+      if(actx!==c)return; // пока декодировали, звук уже пересоздали
+      const src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(g);src.start();
     }catch(e){}
+  }
+  // Будим звук при любом действии игрока: возобновляем, а если не выходит или долго были в фоне — пересоздаём.
+  function wakeAudio(){
+    if(!musicStarted)return;
+    if(needRebuild||!actx||actx.state==='closed'){needRebuild=false;buildAudio();return}
+    if(actx.state!=='running'){
+      const c=actx;
+      c.resume().then(()=>{if(actx===c&&c.state!=='running')buildAudio()}).catch(()=>{if(actx===c)buildAudio()});
+    }
+  }
+  ['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,wakeAudio,true));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){hiddenAt=performance.now();return}
+    if(musicStarted&&performance.now()-hiddenAt>30000)needRebuild=true; // после долгого фона пересоздадим при первом касании
+    else wakeAudio();
+  });
+  // музыка включается с первым стартом игры в этой сессии и дальше не выключается
+  function startMusic(){
+    if(musicStarted){wakeAudio();return}
+    musicStarted=true;buildAudio();
   }
   syncSnd();
   reset();
