@@ -54,15 +54,18 @@ h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;lin
 @media (max-width:899px){
   header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:8px;row-gap:10px;align-items:center}
   header .bar-row,header .hdr-actions{display:contents}
-  header h1{grid-column:1/-1;grid-row:1;padding-right:52px}  /* на всю ширину, справа место под кнопку звука */
-  #sndBtn{grid-column:3;grid-row:1;justify-self:end}
+  header h1{grid-column:1/-1;grid-row:1;padding-right:104px}  /* на всю ширину, справа место под кнопки Telegram и звука */
+  header .icons{grid-column:2/4;grid-row:1;justify-self:end}
   header .stats{grid-column:1;grid-row:2;min-width:0}
   #lbBtn{grid-column:2;grid-row:2}
   #baseBtn{grid-column:3;grid-row:2}
 }
 @media (max-width:430px){.stats{gap:12px}.stat b{font-size:26px}h1{font-size:20px}}  /* телефоны: счёт и две кнопки в одну строку */
-@media (max-width:360px){.stat b{font-size:24px}header .btn:not(.icon){padding:0 10px}h1{font-size:16px}.home{gap:8px}.home .logo{width:28px;height:21px}}
+@media (max-width:360px){.stat b{font-size:24px}header .btn:not(.icon){padding:0 10px}h1{font-size:14px}.home{gap:6px}.home .logo{width:24px;height:18px}}
 .hdr-actions{display:flex;gap:8px;align-items:center}
+.hdr-actions .icons{display:flex;gap:8px}
+a.btn{text-decoration:none}
+body.playing #tgBtn{visibility:hidden}  /* во время забега прячется вместе с остальными кнопками шапки */
 /* Десктоп: шапка в одну строку — заголовок слева, счёт по центру, кнопки справа */
 @media (min-width:900px){
   header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:24px}
@@ -217,13 +220,16 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
       <div class="stat"><span>Рекорд</span><b id="best">—</b></div>
     </div>
     <div class="hdr-actions">
+      <div class="icons"><a class="btn secondary icon" id="tgBtn" href="https://t.me/proper_tv" target="_blank" rel="noopener" aria-label="Telegram-канал">
+        <svg viewBox="0 0 484 484" width="20" height="20" aria-hidden="true"><path d="M425.05 73.9996C425.2 73.9996 425.4 73.9996 425.6 73.9996C430.825 73.9996 435.675 75.6246 439.65 78.4246L439.575 78.3746C442.475 80.8996 444.425 84.4496 444.9 88.4496V88.5246C445.4 91.5746 445.675 95.0746 445.675 98.6496C445.675 100.275 445.625 101.875 445.5 103.475V103.25C439.875 162.475 415.475 306.1 403.075 372.4C397.825 400.475 387.5 409.875 377.5 410.775C355.775 412.8 339.275 396.425 318.225 382.625C285.275 361 266.65 347.55 234.675 326.475C197.7 302.15 221.675 288.725 242.725 266.875C248.25 261.125 344.025 174 345.9 166.1C346 165.625 346.05 165.1 346.05 164.55C346.05 162.6 345.325 160.825 344.15 159.475C342.85 158.625 341.225 158.15 339.525 158.15C338.4 158.15 337.325 158.375 336.325 158.75L336.375 158.725C333.075 159.475 280.442 194.258 178.475 263.075C167.35 271.85 153.3 277.4 138 278.05H137.85C116.175 275.425 96.5004 270.6 77.8254 263.725L79.6754 264.325C56.2254 256.675 37.6004 252.65 39.2004 239.7C40.0504 232.966 49.3337 226.075 67.0504 219.025C176.184 171.475 248.959 140.133 285.375 125C325.55 103.675 372.125 86.1246 421.1 74.7496L425.025 73.9746L425.05 73.9996Z" fill="currentColor"/></svg>
+      </a>
       <button class="btn secondary icon" id="sndBtn" aria-label="Выключить звук" aria-pressed="true">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/>
           <g class="on"><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></g>
           <g class="off"><path d="M16 9l5 6M21 9l-5 6"/></g>
         </svg>
-      </button>
+      </button></div>
       <button class="btn secondary" id="lbBtn">Ловцы</button>
       <button class="btn secondary" id="baseBtn">База</button>
     </div>
