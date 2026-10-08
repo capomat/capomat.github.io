@@ -616,7 +616,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
         // новичку — правила; опытному (от EXPERIENCED очков) — его результат, даже если в топ-10 не попал
         (pts>=EXPERIENCED
           ?'<p class="result">Вы набрали '+pts+' '+word+'. Попробуем&nbsp;ещё&nbsp;раз?</p>'
-          :'<p class="howto">Держи keltaa рядом с петухом. Петух прыгнул — '+(isTouch?'тапни по его клетке':'жми ← или →')+', чтобы перебежать следом.</p>')+
+          :'<p class="howto">'+(isTouch
+            ?'Держи keltaa рядом с петухом. Петух прыгнул — тапни по его клетке, чтобы перебежать следом.'
+            :'Держи keltaa в одной секции с петухом. Используй стрелочки на клавиатуре ← и →, чтобы преследовать петуха.')+'</p>')+
         '<div class="row"><button class="btn primary" id="again" aria-label="'+againLabel+' (пробел)">'+againLabel+'<i class="kbd" aria-hidden="true"></i></button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
