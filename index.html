@@ -527,7 +527,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px
     if(v==='base'||v==='video')return closeBase();
     closeCard();reset();$('startBtn').focus();
   }
-  function closeBase(){closeCard();if(gain)syncSnd();$('baseBtn').focus()}
+  function closeBase(){closeCard();wakeAudio();if(gain)syncSnd();$('baseBtn').focus()}
   $('baseBtn').onclick=()=>{if(!s.running)showBase()};
   // тап мимо видео (или мимо окна Базы) закрывает
   $('overlay').addEventListener('click',e=>{
@@ -589,8 +589,16 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px
   }
   sndBtn.onclick=()=>{soundOn=!soundOn;syncSnd();sndBtn.blur()};
   // музыка включается с первым стартом игры в этой сессии и дальше не выключается
+  // iPhone приостанавливает Web Audio, когда браузер свёрнут, экран заблокирован или играет видео YouTube.
+  // Сам звук не возвращается — будим его при любом действии игрока и при возврате на вкладку.
+  function wakeAudio(){if(actx&&actx.state!=='running')actx.resume().catch(()=>{})}
+  ['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,wakeAudio,true));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)wakeAudio()});
   async function startMusic(){
+    wakeAudio();
     if(musicStarted)return;musicStarted=true;
+    // Safari 17+: тип «воспроизведение» — музыка играет и при включённом беззвучном режиме
+    try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
     try{
       actx=new (window.AudioContext||window.webkitAudioContext)();
       gain=actx.createGain();gain.gain.value=soundOn?VOLUME:0;gain.connect(actx.destination);
