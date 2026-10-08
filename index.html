@@ -566,12 +566,13 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
       inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go();if(e.key==='Escape')closeAnyCard()});
       $('cancelBtn').onclick=()=>{closeCard();reset();$('startBtn').focus()};
     }else{
+      const againLabel=pts>=EXPERIENCED?'Гоу!':'Ещё раз'; // опытному — «Гоу!»
       openCard('<div class="big">CapMaT убежал</div>'+
         // новичку — правила; опытному (от EXPERIENCED очков) — его результат, даже если в топ-10 не попал
         (pts>=EXPERIENCED
-          ?'<p class="result">'+pts+' '+word+'</p>'
+          ?'<p class="result">Вы набрали '+pts+' '+word+'. Попробуем&nbsp;ещё&nbsp;раз?</p>'
           :'<p class="howto">Держи keltaa рядом с петухом. Петух прыгнул — '+(isTouch?'тапни по его клетке':'жми ← или →')+', чтобы перебежать следом. Не успел за секунду — убежал.</p>')+
-        '<div class="row"><button class="btn primary" id="again" aria-label="Ещё раз (пробел)">Ещё раз<i class="kbd" aria-hidden="true"></i></button><button class="btn secondary" id="later">Позже</button></div>');
+        '<div class="row"><button class="btn primary" id="again" aria-label="'+againLabel+' (пробел)">'+againLabel+'<i class="kbd" aria-hidden="true"></i></button><button class="btn secondary" id="later">Позже</button></div>');
       wireButtons();
     }
   }
