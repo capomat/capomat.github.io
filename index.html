@@ -168,7 +168,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 .room{-webkit-tap-highlight-color:transparent}
 @media (hover:none) and (pointer:coarse){.kbd{display:none}}
 #overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(16,12,2,.7);z-index:50;padding:20px}
-.card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px;max-width:400px;width:100%;text-align:center;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+.card{background:var(--bg);color:var(--fg);border-radius:20px;padding:26px 22px 0;max-width:400px;width:100%;text-align:center;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
 .card.bare{background:none;padding:0;border-radius:0;max-width:min(1200px,calc((100vh - 40px)*16/9))}
 .vids{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .vid{display:flex;align-items:center;gap:14px;width:100%;padding:8px;border:0;border-radius:14px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -212,8 +212,42 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 .card .row .btn{flex:1 1 0;min-width:0;height:auto;min-height:44px}  /* в окнах: одна кнопка — на всю ширину, две — пополам */
 .card .result{margin:8px 0 0;font-size:18px}  /* очки опытного игрока под «CapMaT убежал» */
 .card .howto{margin:10px auto 0;max-width:320px;font-size:15px;line-height:1.45;opacity:.8}  /* правила под заголовком проигрыша */
-.card .row{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}  /* единый отступ над кнопками во всех окнах */
+.card .row{display:flex;gap:10px;justify-content:center;margin-top:12px;padding:12px 0 26px;flex-wrap:wrap;position:sticky;bottom:0;z-index:2;background:var(--bg)}  /* кнопки окна прилипают к низу; отступ над ними тот же 24px */
+.card .row::before{content:'';position:absolute;left:0;right:0;top:-18px;height:18px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none}  /* содержимое уходит под кнопки плавно */
+.card:not(:has(.row)){padding-bottom:26px}
 @media (prefers-reduced-motion:reduce){.chip.cap.run,.chip.cap.tense{animation-duration:.5s}}
+
+/* ===== Телефон горизонтально (низкий экран): всё ужимается по высоте ===== */
+@media (orientation:landscape) and (max-height:500px){
+  header{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto;column-gap:8px;row-gap:0;align-items:center;padding:6px 12px}
+  header .bar-row,header .hdr-actions{display:contents}
+  header h1{grid-column:1;grid-row:1;padding-right:0;font-size:17px;height:auto}
+  .home{gap:8px}.home .logo{width:26px;height:20px}
+  header .stats{grid-column:2;grid-row:1;justify-self:center;gap:14px}
+  .stat span{font-size:11px;margin-bottom:2px}
+  .stat b{font-size:20px}
+  header .icons{grid-column:3;grid-row:1;gap:6px}
+  #lbBtn{grid-column:4;grid-row:1} #baseBtn{grid-column:5;grid-row:1}
+  header .btn{height:36px;padding:0 12px;font-size:13px}
+  header .btn.icon{width:36px;padding:0}
+  main{gap:6px;padding:0 6px 6px}
+  .name{font-size:clamp(16px,8vh,40px);padding:8px 6px 0;white-space:nowrap}
+  .field{--bh:clamp(30px,13vh,70px);--r2:calc(var(--bh)*1.26 + 22px);--r3:calc(var(--kh) + 22px);row-gap:calc(var(--bh)*.1);padding-bottom:0}
+  .chip.cap .lbl,.chip.k .lbl{font-size:13px}
+  .field .pop{font-size:16px;top:calc(var(--kh)/2 + 26px)}
+  #startBtn{height:44px;font-size:16px;padding:0 20px;bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  .taphint{bottom:10%;font-size:12px;gap:2px}.taphint svg{width:26px;height:26px}
+  #overlay{padding:10px}
+  .card{padding-top:16px}
+  .card h2{font-size:20px;margin-bottom:4px}
+  .card .big{font-size:30px}
+}
+@media (orientation:landscape) and (max-height:500px) and (max-width:640px){  /* самые узкие горизонтальные (iPhone SE 1-го поколения) */
+  header{column-gap:6px;padding:6px 8px}
+  header h1{font-size:13px}.home{gap:6px}.home .logo{width:22px;height:17px}
+  header .stats{gap:10px}.stat b{font-size:17px}.stat span{font-size:10px}
+  header .btn{height:32px;padding:0 9px;font-size:12px}header .btn.icon{width:32px}header .icons{gap:4px}
+}
 </style>
 </head>
 <body>
