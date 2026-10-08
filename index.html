@@ -28,7 +28,7 @@
 <style>
 :root{
   --red:#ff2d2d; --cap:#2f6bff; --green:#1fbf4a;
-  --accent:#F0BB2F; --ink:#100C02; --paper:#FFFBF1; --nav:#0B0A07; --room-black:#211F19; --ivory:#F2E9D4;  /* палитра: акцент, «чёрный», «белый», шапка */
+  --accent:#F0BB2F; --ink:#100C02; --paper:#FFFBF1; --nav:#0B0A07; --room-black:#211F19; --ivory:#F2E9D4; --room-white:#F6EFE0;  /* палитра: акцент, «чёрный», «белый», шапка */
   --bg:#E1DDD1; --fg:var(--ink); --btn:var(--ink); --btnfg:var(--paper);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -100,7 +100,7 @@ main{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 8px 8px
 .room{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:0;border-radius:16px}
 .field{--bh:clamp(70px,13vh,120px);--kh:calc(var(--bh)*1.1);flex:1;position:relative;display:grid;--r2:calc(var(--bh)*1.26 + 34px);--r3:calc(var(--kh) + 36px);grid-template-rows:minmax(0,1fr) minmax(var(--r2),1fr) minmax(var(--r3),1fr) minmax(0,1fr);row-gap:calc(var(--bh)*.35);min-height:0}
 #black{background:var(--room-black);color:var(--paper)}  /* чёрная секция светлее фона страницы, чтобы читались края */
-#white{background:var(--ivory);color:var(--ink)}  /* белая секция — слоновая кость, как тексты шапки */
+#white{background:var(--room-white);color:var(--ink)}  /* белая секция — светлая слоновая кость */
 .name{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:clamp(34px,9vw,96px);line-height:1;letter-spacing:-.03em;opacity:.18;padding:16px 8px 0;text-align:center;flex:none}
 .lane{display:flex;justify-content:center;align-items:center;min-height:0}
 .lane.cap{grid-row:2;grid-column:1}
