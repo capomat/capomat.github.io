@@ -21,14 +21,14 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#F2E9D4">
+<meta name="theme-color" content="#1B1913">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --red:#ff2d2d; --cap:#2f6bff; --green:#1fbf4a;
-  --accent:#F0BB2F; --ink:#100C02; --paper:#FFFBF1; --nav:#F2E9D4;  /* палитра: акцент, «чёрный», «белый», шапка */
+  --accent:#F0BB2F; --ink:#100C02; --paper:#FFFBF1; --nav:#1B1913;  /* палитра: акцент, «чёрный», «белый», шапка */
   --bg:#E1DDD1; --fg:var(--ink); --btn:var(--ink); --btnfg:var(--paper);
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -39,7 +39,7 @@
 *,*::before,*::after{box-sizing:inherit}
 html,body{height:100%;margin:0}
 body{background:var(--nav);color:var(--fg);font-family:Manrope,system-ui,sans-serif;display:flex;flex-direction:column;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-header{display:flex;flex-direction:column;gap:10px;padding:12px 16px 10px;flex:none;--fg:var(--ink);--btn:var(--ink);--btnfg:var(--paper);color:var(--fg)}
+header{display:flex;flex-direction:column;gap:10px;padding:12px 16px 10px;flex:none;--fg:var(--paper);--btn:var(--paper);--btnfg:var(--ink);color:var(--fg)}  /* шапка на тёмном фоне — светлая */
 h1{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:22px;line-height:28px;height:28px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home{color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:10px;-webkit-tap-highlight-color:transparent}
 .home:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
