@@ -509,17 +509,10 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   async function saveScore(pts,name){
     try{
       const run=runP?await runP:null;runP=null;
-      let r=null;
-      if(run){try{r=await fn({action:'submit',run:run,name:name,score:pts})}catch(e){r=null}}
-      if(r&&r.ok)myId=(await r.json()).id;
-      else if(r&&r.status<500)throw new Error(r.status); // функция отклонила результат
-      else{ // временно: функция недоступна — пишем напрямую, как раньше
-        r=await fetch(SB_URL+'?select=id',{method:'POST',
-          headers:{...SB_H,'Content-Type':'application/json',Prefer:'return=representation'},
-          body:JSON.stringify({name:name,score:pts})});
-        if(!r.ok)throw new Error(r.status);
-        myId=(await r.json())[0].id;
-      }
+      if(!run)throw new Error('no_run');
+      const r=await fn({action:'submit',run:run,name:name,score:pts});
+      if(!r.ok)throw new Error(r.status);
+      myId=(await r.json()).id;
       await loadTop();
       const place=top.findIndex(r=>r.id===myId)+1;
       if(place>0&&window.SarmatCard)showShareCard(place,name,pts);
