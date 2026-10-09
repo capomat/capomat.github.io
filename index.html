@@ -336,7 +336,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   let s, raf=0;
   function reset(){
     s={k:'black',cap:'white',running:false,elapsed:0,score:0,meter:1,
-       phase:'rest',phaseT:0,phaseDur:0,fake:false,nextIn:1200,last:0,clean:0,sinceJump:0,acc:0,tick:0,log:[],rnd:Math.random};
+       phase:'rest',phaseT:0,phaseDur:0,fake:false,nextIn:1200,last:0,clean:0,sinceJump:0,acc:0,tick:0,log:[],rnd:Math.random,bonusUsed:false,canCatch:false};
     clearGhost();place();capMover.style.transform='';capChip.className='chip cap';
     $('score').textContent='0';
   }
@@ -391,11 +391,12 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     s.k=dest;s.moved=true;s.log.push([s.tick,dir<0?0:1]);place();flyK(from,dir);
     if(leaving){
       // ушёл из клетки CapMat: угадал прыжок или повёлся
-      if(s.phase==='windup'&&!s.fake)pop(s.k,40,'Угадал');
+      // бонусы — не больше одного на прыжок: иначе ходы туда-обратно накручивают очки
+      if(s.phase==='windup'&&!s.fake){if(!s.bonusUsed){s.bonusUsed=true;pop(s.k,40,'Угадал')}}
       else if(s.phase==='windup'&&s.fake)pop(s.k,-30);
       else pop(s.k,-20,'Упс');
-    }else if(s.k===s.cap&&s.sinceJump<260){
-      pop(s.k,25);
+    }else if(s.k===s.cap&&s.sinceJump<260&&s.canCatch&&!s.bonusUsed){
+      s.canCatch=false;s.bonusUsed=true;pop(s.k,25);
     }
   }
 
@@ -415,7 +416,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     else if(s.phase==='rest'){
       s.nextIn-=dt;
       if(s.nextIn<=0){
-        s.phase='windup';s.phaseT=0;s.phaseDur=d.windup;s.fake=s.rnd()<d.fakeP;
+        s.phase='windup';s.phaseT=0;s.phaseDur=d.windup;s.fake=s.rnd()<d.fakeP;s.bonusUsed=false;s.canCatch=false;
         capChip.className='chip cap tense';
       }
     }else{
@@ -424,7 +425,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
       const dirX=s.cap==='black'?1:-1; // к границе между клетками
       capMover.style.transform='translateX('+(dirX*p*16)+'vw)';
       if(p>=1){
-        if(!s.fake){s.cap=other(s.cap);s.sinceJump=0;place();}
+        if(!s.fake){s.cap=other(s.cap);s.sinceJump=0;s.canCatch=true;place();}
         capMover.style.transform='';capChip.className='chip cap run';
         s.phase='rest';s.nextIn=d.rest();
       }
@@ -520,7 +521,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
       const p=runP;runP=null; // забег одноразовый: второй вызов его уже не получит
       const run=p?await p:null;
       if(!run)throw new Error('no_run');
-      const r=await fn({action:'submit',run:run,name:name,score:pts,ticks:s.tick,moves:s.log});
+      const r=await fn({action:'submit',run:run,name:name,score:pts,ticks:s.tick,moves:s.log,v:2});
       if(!r.ok)throw new Error(r.status);
       myId=(await r.json()).id;
       await loadTop();
