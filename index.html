@@ -629,7 +629,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
         '<input id="nameIn" maxlength="50" placeholder="Введи никнейм">'+
         '<div class="row"><button class="btn primary" id="saveBtn">Сохранить</button><button class="btn secondary" id="cancelBtn">Закрыть</button></div>','entry');
       const inp=$('nameIn');inp.focus();
-      const go=()=>{if($('saveBtn').disabled)return;const n=inp.value.trim().slice(0,50);if(!n){inp.focus();return}
+      const go=()=>{if($('saveBtn').disabled)return;const n=inp.value.trim().slice(0,50).replace(/[\uD800-\uDBFF]$/,'');if(!n){inp.focus();return}
         $('saveBtn').disabled=true;saveScore(pts,n)};
       $('saveBtn').onclick=go;
       inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go();if(e.key==='Escape')closeAnyCard()});
