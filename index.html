@@ -508,7 +508,8 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   }
   async function saveScore(pts,name){
     try{
-      const run=runP?await runP:null;runP=null;
+      const p=runP;runP=null; // забег одноразовый: второй вызов его уже не получит
+      const run=p?await p:null;
       if(!run)throw new Error('no_run');
       const r=await fn({action:'submit',run:run,name:name,score:pts});
       if(!r.ok)throw new Error(r.status);
@@ -618,7 +619,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
         '<input id="nameIn" maxlength="50" placeholder="Введи никнейм">'+
         '<div class="row"><button class="btn primary" id="saveBtn">Сохранить</button><button class="btn secondary" id="cancelBtn">Закрыть</button></div>','entry');
       const inp=$('nameIn');inp.focus();
-      const go=()=>{const n=inp.value.trim().slice(0,50);if(!n){inp.focus();return}
+      const go=()=>{if($('saveBtn').disabled)return;const n=inp.value.trim().slice(0,50);if(!n){inp.focus();return}
         $('saveBtn').disabled=true;saveScore(pts,n)};
       $('saveBtn').onclick=go;
       inp.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')go();if(e.key==='Escape')closeAnyCard()});
