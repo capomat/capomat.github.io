@@ -374,7 +374,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   function start(){
     reset();s.running=true;updateHint();document.body.classList.add('playing');s.last=performance.now();
     $('overlay').style.display='none';$('overlay').dataset.view='';setHash('');loadTop();
-    $('startBtn').disabled=true;$('lbBtn').disabled=true;$('baseBtn').disabled=true;$('sndBtn').disabled=true;myId=null;startMusic();
+    $('startBtn').disabled=true;$('lbBtn').disabled=true;$('baseBtn').disabled=true;$('sndBtn').disabled=true;myId=null;runP=startRun();startMusic();
     capChip.className='chip cap run';
     raf=requestAnimationFrame(loop);
   }
@@ -438,6 +438,11 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   const SB_URL='https://qqdgezovlafabvczqejk.supabase.co/rest/v1/scores';
   const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxZGdlem92bGFmYWJ2Y3pxZWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzAzNzEsImV4cCI6MjEwNjk0NjM3MX0.juXalp6WrfLoZaq7dsjJjEAQvOfeVMm_rjeXhzerfN0';
   const SB_H={apikey:SB_KEY,Authorization:'Bearer '+SB_KEY};
+  // Серверная проверка: забег регистрируется на сервере при старте, результат принимается, только если его можно набрать за прошедшее время
+  const FN_URL='https://qqdgezovlafabvczqejk.supabase.co/functions/v1/score';
+  let runP=null;
+  const fn=body=>fetch(FN_URL,{method:'POST',headers:{...SB_H,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  function startRun(){return fn({action:'start'}).then(r=>r.ok?r.json():null).then(d=>d&&d.run||null).catch(()=>null)}
   let db=true, top=[], lbReady=false, myId=null;
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function loadTop(){
@@ -503,11 +508,18 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   }
   async function saveScore(pts,name){
     try{
-      const r=await fetch(SB_URL+'?select=id',{method:'POST',
-        headers:{...SB_H,'Content-Type':'application/json',Prefer:'return=representation'},
-        body:JSON.stringify({name:name,score:pts})});
-      if(!r.ok)throw new Error(r.status);
-      myId=(await r.json())[0].id;
+      const run=runP?await runP:null;runP=null;
+      let r=null;
+      if(run){try{r=await fn({action:'submit',run:run,name:name,score:pts})}catch(e){r=null}}
+      if(r&&r.ok)myId=(await r.json()).id;
+      else if(r&&r.status<500)throw new Error(r.status); // функция отклонила результат
+      else{ // временно: функция недоступна — пишем напрямую, как раньше
+        r=await fetch(SB_URL+'?select=id',{method:'POST',
+          headers:{...SB_H,'Content-Type':'application/json',Prefer:'return=representation'},
+          body:JSON.stringify({name:name,score:pts})});
+        if(!r.ok)throw new Error(r.status);
+        myId=(await r.json())[0].id;
+      }
       await loadTop();
       const place=top.findIndex(r=>r.id===myId)+1;
       if(place>0&&window.SarmatCard)showShareCard(place,name,pts);
