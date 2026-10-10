@@ -86,7 +86,7 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
   const dev=ua=>{ua=ua||'';if(!ua)return'';const os=/iPhone|iPad/.test(ua)?'iOS':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Win':/Mac OS/.test(ua)?'Mac':/Linux/.test(ua)?'Linux':'?';
     const br=/YaBrowser/.test(ua)?'Яндекс':/Edg\//.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':'?';return os+'·'+br};
   const BAD=new Set(['med_lat','synth','ppm','fooled','pts_min']); // красным — физически нехарактерно для людей
-  const cell=(v,f,flags,extra='')=>{const on=(flags||[]).includes(f);return `<td class="num ${on?(BAD.has(f)?'bad':'warn'):''}">${v??''}${extra}</td>`};
+  const cell=(v,f,flags,extra='')=>{if(v===-1)v=null;const on=(flags||[]).includes(f);return `<td class="num ${on?(BAD.has(f)?'bad':'warn'):''}">${v??''}${v!=null?extra:''}</td>`};
   const pl=ip=>ip?`<a class="ip" data-ip="${ip}">${ip.slice(0,8)}</a>`:'<span class="mute">до защиты</span>';
   async function call(body){
     const r=await fetch(FN,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json','x-admin-token':TOKEN},body:JSON.stringify(body)});
