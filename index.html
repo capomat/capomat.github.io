@@ -205,6 +205,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 .lb .mi .crown{width:24px;height:14px}
 .lb .mi .med{width:17px;height:20px}
 /* своя строка — мягкая подложка акцентного цвета */
+.lb li[data-i]{cursor:pointer;transition:background .15s}
+.lb li[data-i]:hover,.lb li[data-i]:focus-visible{background:rgba(140,133,114,.18);outline:none}
+.lbhint{margin:2px 0 0;font-size:13px;opacity:.6}
 .lb li.you{background:rgba(140,133,114,.28)}  /* своя строка — серая подложка в тон палитры */
 .lb li.you::before{opacity:1}
 .lb li.entry{background:rgba(140,133,114,.28);align-items:center}
@@ -503,12 +506,12 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     if(!db||pts<=0)return false;
     return top.length<LB_SIZE||pts>(top[top.length-1].score||0);
   }
-  const LB_SIZE=30; // сколько мест в «Ловцах» (и до какого места можно сохранить результат)
+  const LB_SIZE=40; // сколько мест в «Ловцах» (и до какого места можно сохранить результат)
   function boardHtml(pending){
     if(!db)return '<p class="muted">Таблица лидеров сейчас недоступна.</p>';
     if(!lbReady)return '<p class="muted">Загружаю…</p>';
     const MEDALS=['<img class="crown" src="assets/crown.svg" alt="1">','<img class="med" src="assets/silver.svg" alt="2">','<img class="med" src="assets/bronze.svg" alt="3">'];
-    const row=(r,i)=>'<li class="'+[r.id===myId?'you':'',i<3?'medal':''].join(' ').trim()+'">'+(i<3?'<span class="mi">'+MEDALS[i]+'</span>':'')+'<span class="nm">'+esc(r.name||'Аноним')+'</span><span class="pt">'+(r.score|0)+'</span></li>';
+    const row=(r,i)=>'<li class="'+[r.id===myId?'you':'',i<3?'medal':''].join(' ').trim()+'" data-i="'+i+'" tabindex="0" role="button" aria-label="Карточка: место '+(i+1)+'">'+(i<3?'<span class="mi">'+MEDALS[i]+'</span>':'')+'<span class="nm">'+esc(r.name||'Аноним')+'</span><span class="pt">'+(r.score|0)+'</span></li>';
     if(pending){
       // строка с полем для ника вставляется на своё место
       const i=top.filter(r=>r.score>=pending.pts).length;
@@ -541,9 +544,16 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     '<a href="https://l2mammon.com/?utm_source=dogoni-sarmata&utm_medium=game&utm_campaign=leaderboard" target="_blank" rel="noopener">Узнай на l2mammon.com \u2192</a></div>';
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
-    openCard('<h2>Ловцы</h2>'+boardHtml()+'<div class="lbfoot">'+PROMO+'<div class="row"><button class="btn secondary" id="closeLb">Закрыть</button></div></div>','lb',mode);
+    openCard('<h2>Ловцы</h2>'+(top.length&&window.SarmatCard?'<p class="lbhint">Нажми на строку — получишь карточку</p>':'')+boardHtml()+'<div class="lbfoot">'+PROMO+'<div class="row"><button class="btn secondary" id="closeLb">Закрыть</button></div></div>','lb',mode);
     const c=$('card'),edge=()=>c.classList.toggle('lb-end',c.scrollTop+c.clientHeight>=c.scrollHeight-2);
     c.onscroll=edge;edge();
+    // клик по строке — карточка этого места (для тех, кто не сделал её сразу после сохранения)
+    if(window.SarmatCard)c.querySelectorAll('.lb li[data-i]').forEach(li=>{
+      const r=top[+li.dataset.i];if(!r)return;
+      const open=()=>showShareCard(+li.dataset.i+1,r.name||'Аноним',r.score|0);
+      li.onclick=open;
+      li.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();open()}};
+    });
     wireButtons();
   }
   function wireButtons(){
