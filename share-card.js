@@ -22,14 +22,15 @@
   const W = 1080, H = 1080;
   const BG = '#0d0d0d', GREY = '#8a8a8a', WHITE = '#ffffff';
 
-  // Оформление по месту. Места 4–10 — общий стиль без награды.
+  // Оформление по месту. Места 4+ — общий стиль без награды; текст: 4–10 «в десятке», 11+ «среди лучших».
   const TIERS = {
     1: { accent: '#F5C542', title: 'Лучший ловец петухов', award: 'crown' },
     2: { accent: '#C9CED6', title: 'Серебряный ловец петухов', award: 'silver' },
     3: { accent: '#D08A4E', title: 'Бронзовый ловец петухов', award: 'bronze' },
   };
   const TOP10 = { accent: '#9a9a9a', title: 'В десятке ловцов петухов', award: null };
-  const tierOf = (place) => TIERS[place] || TOP10;
+  const TOP30 = { accent: '#9a9a9a', title: 'Среди лучших ловцов петухов', award: null }; // места 11+
+  const tierOf = (place) => TIERS[place] || (place <= 10 ? TOP10 : TOP30);
 
   // Склонение: 1 очко, 2 очка, 5 очков, 11 очков, 1874 очка.
   function pointsWord(n) {

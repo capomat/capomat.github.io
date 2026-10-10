@@ -185,6 +185,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 .card p{margin:0 0 8px;line-height:1.5;font-size:15px}
 .card .big{font-family:Unbounded,system-ui,sans-serif;font-size:44px;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
 .promo{margin:24px 0 0;padding:24px 0 8px;border-top:1px solid rgba(140,133,114,.35)}
+.lbfoot{position:sticky;bottom:0;z-index:2;background:var(--bg)}  /* ссылка и «Закрыть» поверх списка «Ловцов», список прокручивается под ними */
+.lbfoot .promo{margin-top:0;padding-top:16px}
+.lbfoot .row{position:static}
 .promo p{margin:0 0 4px;font-size:15px;opacity:.75}
 .promo a{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:16px;color:inherit;text-decoration:underline;text-underline-offset:4px}
 .promo a:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
@@ -482,8 +485,8 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   async function loadTop(){
     try{
       // «Ловцы»: лучший результат каждого игрока (представление leaderboard); запасной путь — прямо из таблицы
-      let r=await fetch(SB_URL.replace(/scores$/,'leaderboard')+'?select=id,name,score&order=score.desc,id.asc&limit=10',{headers:SB_H});
-      if(!r.ok)r=await fetch(SB_URL+'?select=id,name,score&order=score.desc,id.asc&limit=10',{headers:SB_H});
+      let r=await fetch(SB_URL.replace(/scores$/,'leaderboard')+'?select=id,name,score&order=score.desc,id.asc&limit='+LB_SIZE,{headers:SB_H});
+      if(!r.ok)r=await fetch(SB_URL+'?select=id,name,score&order=score.desc,id.asc&limit='+LB_SIZE,{headers:SB_H});
       if(!r.ok)throw new Error(r.status);
       top=await r.json();db=true;
     }catch(e){db=null}
@@ -495,8 +498,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   loadTop();
   function qualifies(pts){
     if(!db||pts<=0)return false;
-    return top.length<10||pts>(top[top.length-1].score||0);
+    return top.length<LB_SIZE||pts>(top[top.length-1].score||0);
   }
+  const LB_SIZE=30; // сколько мест в «Ловцах» (и до какого места можно сохранить результат)
   function boardHtml(pending){
     if(!db)return '<p class="muted">Таблица лидеров сейчас недоступна.</p>';
     if(!lbReady)return '<p class="muted">Загружаю…</p>';
@@ -507,7 +511,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
       const i=top.filter(r=>r.score>=pending.pts).length;
       const entry='<li class="entry"><input id="nameIn" maxlength="50" placeholder="Твой ник"><span class="pt">'+pending.pts+'</span></li>';
       const rows=top.map(row);rows.splice(i,0,entry);
-      return '<ol class="lb">'+rows.slice(0,10).join('')+'</ol>';
+      return '<ol class="lb">'+rows.slice(0,LB_SIZE).join('')+'</ol>';
     }
     if(!top.length)return '<p class="muted">Пока пусто. Будь первым.</p>';
     return '<ol class="lb">'+top.map(row).join('')+'</ol>';
@@ -534,7 +538,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     '<a href="https://l2mammon.com/?utm_source=dogoni-sarmata&utm_medium=game&utm_campaign=leaderboard" target="_blank" rel="noopener">Узнай на l2mammon.com \u2192</a></div>';
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
-    openCard('<h2>Ловцы</h2>'+boardHtml()+PROMO+'<div class="row"><button class="btn secondary" id="closeLb">Закрыть</button></div>','lb',mode);
+    openCard('<h2>Ловцы</h2>'+boardHtml()+'<div class="lbfoot">'+PROMO+'<div class="row"><button class="btn secondary" id="closeLb">Закрыть</button></div></div>','lb',mode);
     wireButtons();
   }
   function wireButtons(){
