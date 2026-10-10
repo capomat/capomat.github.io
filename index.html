@@ -481,7 +481,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function loadTop(){
     try{
-      const r=await fetch(SB_URL+'?select=id,name,score&order=score.desc,id.asc&limit=10',{headers:SB_H});
+      // «Ловцы»: лучший результат каждого игрока (представление leaderboard); запасной путь — прямо из таблицы
+      let r=await fetch(SB_URL.replace(/scores$/,'leaderboard')+'?select=id,name,score&order=score.desc,id.asc&limit=10',{headers:SB_H});
+      if(!r.ok)r=await fetch(SB_URL+'?select=id,name,score&order=score.desc,id.asc&limit=10',{headers:SB_H});
       if(!r.ok)throw new Error(r.status);
       top=await r.json();db=true;
     }catch(e){db=null}
