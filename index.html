@@ -185,8 +185,11 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 .card p{margin:0 0 8px;line-height:1.5;font-size:15px}
 .card .big{font-family:Unbounded,system-ui,sans-serif;font-size:44px;font-weight:800;margin:4px 0;font-variant-numeric:tabular-nums}
 .promo{margin:24px 0 0;padding:24px 0 8px;border-top:1px solid rgba(140,133,114,.35)}
-.lbfoot{position:sticky;bottom:0;z-index:2;background:var(--bg)}  /* ссылка и «Закрыть» поверх списка «Ловцов», список прокручивается под ними */
-.lbfoot .promo{margin-top:0;padding-top:16px}
+.lbfoot{position:sticky;bottom:0;z-index:2;background:var(--bg);margin:0 -22px;padding:0 22px;border-top:1px solid rgba(140,133,114,.35)}  /* ссылка и «Закрыть» поверх списка «Ловцов»; разделитель — от края до края окна */
+.lbfoot::before{content:'';position:absolute;left:0;right:0;bottom:calc(100% + 1px);height:56px;pointer-events:none;transition:opacity .2s;
+  background:linear-gradient(to bottom,transparent,var(--bg));background:linear-gradient(to bottom,color-mix(in srgb,var(--bg) 0%,transparent),var(--bg))}  /* затемнение: ниже есть ещё строки */
+.card.lb-end .lbfoot::before{opacity:0}  /* докрутили до конца — затемнение не закрывает последнюю строку */
+.lbfoot .promo{margin-top:0;padding-top:16px;border-top:0}
 .lbfoot .row{position:static}
 .promo p{margin:0 0 4px;font-size:15px;opacity:.75}
 .promo a{font-family:Unbounded,system-ui,sans-serif;font-weight:800;font-size:16px;color:inherit;text-decoration:underline;text-underline-offset:4px}
@@ -529,7 +532,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   function openCard(html,view,mode){
     cardOpenedAt=performance.now();
     setHash(view==='lb'?'leaders':(view==='base'||view==='video')?'base':'');
-    $('card').className='card';$('card').innerHTML=html;$('overlay').dataset.view=view||'';$('overlay').dataset.mode=mode||'';
+    $('card').className='card';$('card').onscroll=null;$('card').innerHTML=html;$('overlay').dataset.view=view||'';$('overlay').dataset.mode=mode||'';
     $('overlay').style.display='flex';
   }
   function closeCard(){setHash('');$('overlay').style.display='none';$('overlay').dataset.view='';$('card').innerHTML=''} // вместе с содержимым удаляется и плеер YouTube, иначе видео играет дальше
@@ -539,6 +542,8 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   function showBoard(mode){
     // mode: 'menu' — открыт кнопкой сверху, 'saved' — после сохранения результата
     openCard('<h2>Ловцы</h2>'+boardHtml()+'<div class="lbfoot">'+PROMO+'<div class="row"><button class="btn secondary" id="closeLb">Закрыть</button></div></div>','lb',mode);
+    const c=$('card'),edge=()=>c.classList.toggle('lb-end',c.scrollTop+c.clientHeight>=c.scrollHeight-2);
+    c.onscroll=edge;edge();
     wireButtons();
   }
   function wireButtons(){
