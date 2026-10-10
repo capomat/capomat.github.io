@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Наблюдение</title>
+<style>
+:root{--bg:#0B0A07;--card:#211F19;--line:#3a362b;--ink:#F2E9D4;--mute:#a69d88;--acc:#F0BB2F;--red:#EF452E;--grn:#34B244;--amb:#e8a33a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+h1{font-size:18px;margin:0 8px 0 0}
+h2{font-size:15px;margin:0 0 10px}
+main{padding:16px;display:grid;gap:16px;max-width:1500px;margin:0 auto}
+section{background:var(--card);border-radius:12px;padding:14px;overflow:hidden}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{background:var(--card);border-radius:8px;padding:6px 10px;color:var(--mute)}
+.stat b{color:var(--ink);font-size:15px;margin-left:4px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+th{color:var(--mute);font-weight:600;font-size:12px}
+td.why{white-space:normal;min-width:240px;color:var(--mute)}
+tr.hid td{opacity:.55}
+.risk{display:inline-block;min-width:34px;text-align:center;border-radius:6px;padding:1px 6px;font-weight:700;color:#100C02}
+.r0{background:#3d4a3a;color:var(--ink)}.r3{background:var(--amb)}.r2{background:#f07a3a}.r1{background:var(--red);color:#fff}
+.tag{display:inline-block;border-radius:6px;padding:0 6px;margin-right:4px;font-size:12px;border:1px solid var(--line);color:var(--mute)}
+.tag.ban{border-color:var(--red);color:var(--red)}.tag.hum{border-color:var(--grn);color:var(--grn)}.tag.bot{border-color:var(--red);color:var(--red)}
+button{font:inherit;font-size:12px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:3px 8px;cursor:pointer;margin:0 4px 4px 0}
+button:hover{border-color:var(--ink)}
+button.pri{background:var(--acc);border-color:var(--acc);color:#100C02;font-weight:700}
+a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-monospace,Menlo,monospace}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.mute{color:var(--mute)}
+#msg{color:var(--mute)}
+#lock{max-width:520px;margin:15vh auto;padding:16px;text-align:center;color:var(--mute)}
+#detail{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;z-index:5;padding:16px;overflow:auto}
+#detail .box{background:var(--card);border-radius:12px;padding:14px;max-width:1400px;margin:0 auto}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:900px){.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="lock">Нет доступа.</div>
+<div id="app" hidden>
+<header>
+  <h1>Наблюдение · CapMaT</h1>
+  <div class="stats" id="stats"></div>
+  <button class="pri" id="refresh">Обновить</button>
+  <button id="analyze">Проверить сейчас</button>
+  <span id="msg"></span>
+</header>
+<main>
+  <section><h2>Ловцы <span class="mute">(скрытые — полупрозрачные, их не видят игроки)</span></h2><div class="tw"><table id="board"></table></div></section>
+  <div class="split">
+    <section><h2>Подозрительные партии за неделю</h2><div class="tw"><table id="recent"></table></div></section>
+    <section><h2>Игроки за неделю</h2><div class="tw"><table id="players"></table></div></section>
+  </div>
+  <section><h2>Баны</h2><div class="tw"><table id="bans"></table></div></section>
+</main>
+</div>
+<div id="detail"><div class="box" id="dbox"></div></div>
+<script>
+(()=>{
+  // Ключ живёт только в адресе после # — он не уходит на GitHub и не хранится в браузере.
+  const TOKEN=decodeURIComponent((location.hash||'').slice(1));
+  const FN='https://qqdgezovlafabvczqejk.supabase.co/functions/v1/watch';
+  const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxZGdlem92bGFmYWJ2Y3pxZWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNzAzNzEsImV4cCI6MjEwNjk0NjM3MX0.juXalp6WrfLoZaq7dsjJjEAQvOfeVMm_rjeXhzerfN0';
+  const $=id=>document.getElementById(id);
+  const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pad=n=>String(n).padStart(2,'0');
+  const dt=s=>{if(!s)return'';const d=new Date(s);return pad(d.getDate())+'.'+pad(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
+  const mmss=s=>s==null?'':(s>=60?Math.floor(s/60)+' мин '+pad(s%60)+' с':s+' с');
+  const risk=r=>r==null?'<span class="mute">—</span>':`<span class="risk ${r>=99?'r1':r>=60?'r2':r>0?'r3':'r0'}">${r}</span>`;
+  const dev=ua=>{ua=ua||'';const os=/iPhone|iPad/.test(ua)?'iOS':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Windows':/Mac OS/.test(ua)?'Mac':/Linux/.test(ua)?'Linux':'?';
+    const br=/YaBrowser/.test(ua)?'Яндекс':/Edg\//.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':'?';return os+' · '+br};
+  async function call(body){
+    const r=await fetch(FN,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json','x-admin-token':TOKEN},body:JSON.stringify(body)});
+    if(r.status===404)throw new Error('denied');
+    return r.json();
+  }
+  let data=null;
+  async function load(){
+    $('msg').textContent='загрузка…';
+    try{data=await call({action:'overview'});render();$('msg').textContent='обновлено '+dt(data.now).slice(6)}
+    catch(e){if(e.message==='denied'){$('app').hidden=true;$('lock').hidden=false}else $('msg').textContent='ошибка: '+e.message}
+  }
+  function render(){
+    $('lock').hidden=true;$('app').hidden=false;
+    const s=data.stats;
+    $('stats').innerHTML=[['партий за час',s.starts1h],['игроков за час',s.players1h],['партий за сутки',s.starts24h],
+      ['отчётов за неделю',s.finished7d],['с риском',s.flagged7d],['банов',s.bans]].map(([a,b])=>`<span class="stat">${a}<b>${b}</b></span>`).join('');
+    $('board').innerHTML='<tr><th>#</th><th>Ник</th><th>Очки</th><th>Когда</th><th>Партия</th><th>Реакция</th><th>Риск</th><th>Игрок</th><th>Почему</th><th></th></tr>'+
+      data.board.map((r,i)=>`<tr class="${r.hidden?'hid':''}"><td>${i+1}</td><td>${esc(r.name)}</td><td><b>${r.score}</b></td><td>${dt(r.at)}</td>
+      <td>${mmss(r.game_sec)}</td><td>${r.med_lat==null?'':r.med_lat+' мс'}</td><td>${risk(r.risk)}</td>
+      <td>${r.ip?`<a class="ip" data-ip="${r.ip}">${r.ip.slice(0,8)}</a>`:'<span class="mute">до защиты</span>'}</td>
+      <td class="why">${esc(r.hidden?('скрыт: '+(r.hidden_reason||'')):(r.why||''))}</td>
+      <td><button data-act="${r.hidden?'unhide':'hide'}" data-id="${r.id}">${r.hidden?'вернуть':'скрыть'}</button></td></tr>`).join('');
+    $('recent').innerHTML='<tr><th>Когда</th><th>Игрок</th><th>Очки</th><th>Партия</th><th>Риск</th><th>Почему</th></tr>'+
+      data.recent.map(r=>`<tr><td>${dt(r.started_at)}</td><td><a class="ip" data-ip="${r.ip}">${esc((r.ip||'').slice(0,8))}</a></td><td>${r.real}</td>
+      <td>${mmss(r.game_sec)}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why)}</td></tr>`).join('')||'<tr><td class="mute">пока пусто</td></tr>';
+    $('players').innerHTML='<tr><th>Игрок</th><th>Риск</th><th>Лучший</th><th>Партий</th><th>Стартов/сутки</th><th>Устройство</th><th>Страны</th><th></th></tr>'+
+      data.players.map(p=>`<tr><td><a class="ip" data-ip="${p.ip}">${p.ip.slice(0,8)}</a> ${p.banned?'<span class="tag ban">бан</span>':''}${p.label==='human'?'<span class="tag hum">человек</span>':p.label==='bot'?'<span class="tag bot">бот</span>':''}</td>
+      <td>${risk(p.maxRisk)}</td><td>${p.best}</td><td>${p.runs}</td><td>${p.starts24h}</td><td>${esc(dev(p.ua))}${p.devices.length>1?` <span class="tag">${p.devices.length} устр.</span>`:''}</td>
+      <td>${esc(p.countries.join(', '))}</td><td></td></tr>`).join('');
+    $('bans').innerHTML='<tr><th>Когда</th><th>Игрок</th><th>Причина</th><th></th></tr>'+
+      data.bans.map(b=>`<tr><td>${dt(b.created_at)}</td><td><a class="ip" data-ip="${b.ip_hash.slice(0,16)}">${b.ip_hash.slice(0,8)}</a></td>
+      <td class="why">${esc(b.reason)}</td><td><button data-op="unban" data-ip="${b.ip_hash.slice(0,16)}">снять бан</button></td></tr>`).join('');
+  }
+  async function player(ip){
+    $('dbox').innerHTML='загрузка…';$('detail').style.display='block';
+    const d=await call({action:'player',ip});const p=(data.players||[]).find(x=>x.ip===ip)||{};
+    const rows=d.runs.map(r=>{const m=Math.max(1,(r.game_sec||0))/60;const inp=r.inp||{};
+      return `<tr><td>${dt(r.started_at)}</td><td>${esc(r.outcome||'брошена')}</td><td><b>${r.real??''}</b></td><td>${mmss(r.game_sec)}</td>
+      <td>${r.real&&r.game_sec?Math.round(r.real/m):''}</td><td>${r.med_lat??''}</td><td>${r.lat_iqr??''}</td><td>${r.lat_first??''}→${r.lat_last??''}</td>
+      <td>${r.catches??''}</td><td>${r.guesses??''}/${r.fooled??''}${r.exp_fooled!=null?' ('+r.exp_fooled+')':''}</td><td>${r.oops??''}${r.oops!=null&&r.game_sec?' ('+Math.round(r.oops/m)+'/мин)':''}</td>
+      <td>${inp.k??''}/${inp.t??''}/${inp.u??''}</td><td>${esc(r.country||'')}</td><td class="mono">${esc((r.dev&&r.dev.fp)||'')}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why||'')}</td></tr>`}).join('');
+    const last=d.runs[d.runs.length-1]||{};
+    $('dbox').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h2>Игрок <span class="mono">${ip}</span> ${p.banned?'<span class="tag ban">бан</span>':''}${p.label?`<span class="tag ${p.label==='human'?'hum':'bot'}">${p.label==='human'?'человек':'бот'}</span>`:''}</h2>
+      <div><button data-op="human" data-ip="${ip}">это человек</button><button data-op="bot" data-ip="${ip}">это бот</button><button data-op="unlabel" data-ip="${ip}">снять пометку</button>
+      ${p.banned?`<button data-op="unban" data-ip="${ip}">снять бан</button>`:`<button data-op="ban" data-ip="${ip}">забанить</button>`}<button id="close">закрыть</button></div></div>
+      <p class="mute">${esc(dev(last.ua))} · ${esc((last.dev&&[last.dev.tz,last.dev.scr,last.dev.lang].filter(Boolean).join(' · '))||'')}</p>
+      <div class="tw"><table><tr><th>Старт</th><th>Исход</th><th>Очки</th><th>Партия</th><th>Очк/мин</th><th>Реакция</th><th>Разброс</th><th>Начало→конец</th><th>Догонов</th><th>Угад/попался (ожид.)</th><th>«Упс»</th><th>Клав/тап/скрипт</th><th>Страна</th><th>Устройство</th><th>Риск</th><th>Почему</th></tr>${rows}</table></div>`;
+    $('close').onclick=()=>{$('detail').style.display='none'};
+  }
+  document.addEventListener('click',async e=>{
+    const t=e.target;
+    if(t.matches('a.ip')&&t.dataset.ip)return player(t.dataset.ip);
+    if(t===$('detail'))return $('detail').style.display='none';
+    if(t.dataset.act){await call({action:'act',op:t.dataset.act,score_id:Number(t.dataset.id)});return load()}
+    if(t.dataset.op){
+      const ip=t.dataset.ip;let note='';
+      if(t.dataset.op==='ban'){note=prompt('Причина бана (для себя):','')??null;if(note===null)return}
+      await call({action:'act',op:t.dataset.op,ip,note});$('detail').style.display='none';return load();
+    }
+  });
+  $('refresh').onclick=load;
+  $('analyze').onclick=async()=>{$('msg').textContent='проверяю…';const r=await call({action:'analyze'});$('msg').textContent='проверено партий: '+(r.analyzed??r.error);load()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')$('detail').style.display='none'});
+  if(TOKEN.length<20){$('lock').hidden=false}else{load();setInterval(()=>{if(!document.hidden&&$('detail').style.display!=='block')load()},60000)}
+})();
+</script>
+</body>
+</html>
