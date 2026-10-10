@@ -378,7 +378,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   function start(){
     reset();s.seed=crypto.getRandomValues(new Uint32Array(1))[0];s.rnd=mulberry32(s.seed);s.running=true;updateHint();document.body.classList.add('playing');s.last=performance.now();
     $('overlay').style.display='none';$('overlay').dataset.view='';setHash('');loadTop();
-    $('startBtn').disabled=true;$('lbBtn').disabled=true;$('baseBtn').disabled=true;$('sndBtn').disabled=true;myId=null;runP=startRun(s.seed);startMusic();
+    $('startBtn').disabled=true;$('lbBtn').disabled=true;$('baseBtn').disabled=true;$('sndBtn').disabled=true;myId=null;runP=startRun(s.seed);{const g=s;runP.then(r=>{g.run=r})}startMusic();
     capChip.className='chip cap run';
     raf=requestAnimationFrame(loop);
   }
@@ -465,6 +465,17 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     d.fp=[...new Uint8Array(buf)].slice(0,8).map(b=>b.toString(16).padStart(2,'0')).join('');
     devInfo=d;
   }catch(e){}})();
+  // Недоигранная партия (вкладку закрыли, свернули, обновили): отправляем журнал до этой точки — только для статистики.
+  // Журнал сжат (разница шагов в base36, «-» = влево): запрос в момент закрытия браузер ограничивает 64 КБ.
+  function sendAbandon(){
+    if(!s||!s.running||!s.run||s.tick<1)return;
+    const tk=s.tick;let prev=0;
+    const enc=s.log.filter(m=>m[0]<=tk).map(([t,d])=>{const x=(d?'':'-')+(t-prev).toString(36);prev=t;return x}).join(',');
+    const body={action:'abandon',run:s.run,score:Math.floor(s.score),ticks:tk,moves:enc,v:2,inp:s.inp};
+    try{fetch(FN_URL,{method:'POST',keepalive:true,headers:{...SB_H,'Content-Type':'application/json'},body:JSON.stringify(body)}).catch(()=>{})}catch(e){}
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')sendAbandon()});
+  window.addEventListener('pagehide',sendAbandon);
   function startRun(seed){return fn({action:'start',seed:seed,dev:devInfo}).then(r=>r.ok?r.json():null).then(d=>d&&d.run||null).catch(()=>null)}
   let db=true, top=[], lbReady=false, myId=null;
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
