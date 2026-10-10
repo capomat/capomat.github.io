@@ -619,6 +619,9 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     s.running=false;cancelAnimationFrame(raf);updateHint();document.body.classList.remove('playing');
     capChip.className='chip cap';capMover.style.transform='';
     const pts=Math.floor(s.score);
+    // короткий отчёт о каждой партии: сервер пересчитывает её и хранит отпечаток игры (для разбора рекордов)
+    const rp=runP,log=s.log,tk=s.tick;
+    if(rp&&tk>0)rp.then(run=>{if(run)fn({action:'end',run:run,score:pts,ticks:tk,moves:log,v:2}).catch(()=>{})});
     $('startBtn').disabled=false;$('lbBtn').disabled=false;$('baseBtn').disabled=false;$('sndBtn').disabled=false;
     const n10=pts%10,n100=pts%100;
     const word=(n10===1&&n100!==11)?'очко':(n10>=2&&n10<=4&&(n100<12||n100>14))?'очка':'очков';
@@ -650,12 +653,12 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 
   $('startBtn').onclick=start;
   // на тач-экранах тап по клетке работает как стрелка в её сторону
-  rooms.black.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')move(-1)});
-  rooms.white.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')move(1)});
+  rooms.black.addEventListener('pointerdown',e=>{if(e.isTrusted&&e.pointerType!=='mouse')move(-1)});
+  rooms.white.addEventListener('pointerdown',e=>{if(e.isTrusted&&e.pointerType!=='mouse')move(1)});
   window.addEventListener('keydown',e=>{
     if(s.running&&['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(e.code))document.body.classList.add('keys-used'); // разобрался с управлением — прячем подсказку до перезагрузки страницы
-    if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();move(-1)}
-    if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();move(1)}
+    if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();if(e.isTrusted)move(-1)}
+    if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();if(e.isTrusted)move(1)}
     const view=$('overlay').dataset.view;
     if(e.code==='Escape'&&$('overlay').style.display==='flex'){closeAnyCard();return}
     if(e.code==='Space'){if(view==='base'||view==='video'||view==='card')return;e.preventDefault();if(!s.running&&view!=='entry')start()}
