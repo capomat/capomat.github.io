@@ -29,7 +29,7 @@
     3: { accent: '#D08A4E', title: 'Бронзовый ловец петухов', award: 'bronze' },
   };
   const TOP10 = { accent: '#9a9a9a', title: 'В десятке ловцов петухов', award: null };
-  const TOP30 = { accent: '#9a9a9a', title: 'Среди лучших ловцов петухов', award: null }; // места 11+
+  const TOP30 = { accent: '#9a9a9a', title: 'Среди лучших ловцов', award: null }; // места 11+
   const tierOf = (place) => TIERS[place] || (place <= 10 ? TOP10 : TOP30);
 
   // Склонение: 1 очко, 2 очка, 5 очков, 11 очков, 1874 очка.
