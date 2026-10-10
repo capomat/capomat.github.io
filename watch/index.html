@@ -87,6 +87,8 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
     const br=/YaBrowser/.test(ua)?'Яндекс':/Edg\//.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':'?';return os+'·'+br};
   const BAD=new Set(['med_lat','synth','ppm','fooled','pts_min']); // красным — физически нехарактерно для людей
   const cell=(v,f,flags,extra='')=>{if(v===-1)v=null;const on=(flags||[]).includes(f);return `<td class="num ${on?(BAD.has(f)?'bad':'warn'):''}">${v??''}${v!=null?extra:''}</td>`};
+  const OUT={saved:'рекорд',ended:'доиграна',abandoned:'брошена',zero:'0 очков',bot:'бот?',spam:'долбёжка?',banned:'бан, рекорд',banned_end:'бан, доиграна',mismatch:'журнал не сошёлся',too_long:'дольше реального времени',db_insert:'ошибка записи'};
+  const outc=o=>o==null?'нет отчёта':(OUT[o]||o);
   const pl=ip=>ip?`<a class="ip" data-ip="${ip}">${ip.slice(0,8)}</a>`:'<span class="mute">до защиты</span>';
   async function call(body){
     const r=await fetch(FN,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json','x-admin-token':TOKEN},body:JSON.stringify(body)});
@@ -130,7 +132,7 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
       if(st.onlySaved)list=list.filter(r=>r.outcome==='saved');
       if(st.min)list=list.filter(r=>(r.real||0)>=st.min);
       $('tbl').innerHTML=head('runs',cols,[['t','Когда'],['p','Игрок'],['name','Ник'],['o','Исход'],['real','Очки'],['g','Партия'],['pm','Очк/мин'],['lat','Реакция'],['iqr','Разброс'],['c','Догонов'],['gs','Угад./попался (ожид.)'],['op','«Упс»/мин'],['pp','Нажатий/мин'],['u','Скрипт'],['d','Устройство'],['risk','Риск'],['w','Почему']])+
-        sorted(list,'runs',cols).slice(0,600).map(r=>{const u=(r.inp||{}).u;return `<tr><td>${dt(r.started_at)}</td><td>${pl(r.ip)}</td><td>${esc(r.name||'')}</td><td>${esc(r.outcome)}</td>
+        sorted(list,'runs',cols).slice(0,600).map(r=>{const u=(r.inp||{}).u;return `<tr><td>${dt(r.started_at)}</td><td>${pl(r.ip)}</td><td>${esc(r.name||'')}</td><td>${esc(outc(r.outcome))}</td>
         <td class="num"><b>${r.real??''}</b></td>${cell(mmss(r.game_sec),'long',r.flags)}${cell(r.pts_min,'pts_min',r.flags)}${cell(r.med_lat,'med_lat',r.flags)}${cell(r.lat_iqr,'lat_iqr',r.flags)}
         <td class="num">${r.catches??''}</td>${cell((r.guesses??'')+'/'+(r.fooled??'')+(r.exp_fooled!=null?' ('+r.exp_fooled+')':''),'fooled',r.flags)}${cell(r.opm,'opm',r.flags)}${cell(r.ppm,'ppm',r.flags)}${cell(u,'synth',r.flags)}
         <td>${esc(dev(r.ua))} ${esc(r.country||'')}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why||'')}</td></tr>`}).join('')||'<tr><td class="mute">ничего не найдено</td></tr>';
@@ -155,14 +157,14 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
     const L=[`Игрок ${ip}${p.name?' (ник '+p.name+')':''}${p.banned?' [бан]':''}${p.label?' [пометка: '+p.label+']':''}`,
       `Устройство: ${(runs[runs.length-1]||{}).ua||'?'}`,`Отпечаток: ${[...new Set(runs.map(r=>r.dev&&r.dev.fp).filter(Boolean))].join(', ')||'?'} · страны: ${[...new Set(runs.map(r=>r.country).filter(Boolean))].join(', ')||'?'}`,
       'старт | исход | очки | сек | очк/мин | реакция p10/med/p90 | разброс | начало→конец | догонов | угад/попался(ожид) | упс | клав/тап/скрипт | риск | почему'];
-    for(const r of runs){const i=r.inp||{};L.push([dt(r.started_at),r.outcome||'брошена',r.real??'',r.game_sec??'',r.pts_min??'',`${r.lat_p10??''}/${r.med_lat??''}/${r.lat_p90??''}`,r.lat_iqr??'',
+    for(const r of runs){const i=r.inp||{};L.push([dt(r.started_at),outc(r.outcome),r.real??'',r.game_sec??'',r.pts_min??'',`${r.lat_p10??''}/${r.med_lat??''}/${r.lat_p90??''}`,r.lat_iqr??'',
       `${r.lat_first??''}→${r.lat_last??''}`,r.catches??'',`${r.guesses??''}/${r.fooled??''}(${r.exp_fooled??''})`,r.oops??'',`${i.k??''}/${i.t??''}/${i.u??''}`,r.risk??'',r.risk_why||''].join(' | '))}
     return L.join('\n');
   }
   async function player(ip){
     $('dbox').innerHTML='загрузка…';$('detail').style.display='block';
     const d=await call({action:'player',ip});const p=(data.players||[]).find(x=>x.ip===ip)||{};const last=d.runs[d.runs.length-1]||{};
-    const rows=d.runs.map(r=>{const i=r.inp||{};return `<tr><td>${dt(r.started_at)}</td><td>${esc(r.outcome||'брошена')}</td><td class="num"><b>${r.real??''}</b></td>${cell(mmss(r.game_sec),'long',r.flags)}
+    const rows=d.runs.map(r=>{const i=r.inp||{};return `<tr><td>${dt(r.started_at)}</td><td>${esc(outc(r.outcome))}</td><td class="num"><b>${r.real??''}</b></td>${cell(mmss(r.game_sec),'long',r.flags)}
       ${cell(r.pts_min,'pts_min',r.flags)}${cell(r.med_lat,'med_lat',r.flags)}${cell(r.lat_iqr,'lat_iqr',r.flags)}<td class="num">${r.lat_first??''}→${r.lat_last??''}</td><td class="num">${r.catches??''}</td>
       ${cell((r.guesses??'')+'/'+(r.fooled??'')+(r.exp_fooled!=null?' ('+r.exp_fooled+')':''),'fooled',r.flags)}${cell(r.opm,'opm',r.flags)}${cell(r.ppm,'ppm',r.flags)}${cell((i.k??'')+'/'+(i.t??'')+'/'+(i.u??''),'synth',r.flags)}
       <td>${esc(r.country||'')}</td><td class="mono">${esc((r.dev&&r.dev.fp)||'')}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why||'')}</td></tr>`}).join('');
