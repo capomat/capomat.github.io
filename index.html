@@ -336,7 +336,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   let s, raf=0;
   function reset(){
     s={k:'black',cap:'white',running:false,elapsed:0,score:0,meter:1,
-       phase:'rest',phaseT:0,phaseDur:0,fake:false,nextIn:1200,last:0,clean:0,sinceJump:0,acc:0,tick:0,log:[],rnd:Math.random,bonusUsed:false,canCatch:false};
+       phase:'rest',phaseT:0,phaseDur:0,fake:false,nextIn:1200,last:0,clean:0,sinceJump:0,acc:0,tick:0,log:[],rnd:Math.random,bonusUsed:false,canCatch:false,inp:{k:0,t:0,u:0}};
     clearGhost();place();capMover.style.transform='';capChip.className='chip cap';
     $('score').textContent='0';
   }
@@ -452,7 +452,20 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   const FN_URL='https://qqdgezovlafabvczqejk.supabase.co/functions/v1/score';
   let runP=null;
   const fn=body=>fetch(FN_URL,{method:'POST',headers:{...SB_H,'Content-Type':'application/json'},body:JSON.stringify(body)});
-  function startRun(seed){return fn({action:'start',seed:seed}).then(r=>r.ok?r.json():null).then(d=>d&&d.run||null).catch(()=>null)}
+  // Описание устройства для разбора игроков: часовой пояс, языки, экран, железо, отпечаток рисования.
+  let devInfo=null;
+  (async()=>{try{
+    const n=navigator,sc=screen;let cv='';
+    try{const c=document.createElement('canvas');c.width=220;c.height=30;const x=c.getContext('2d');x.textBaseline='top';x.font='16px Arial';
+      x.fillStyle='#f60';x.fillRect(0,0,110,20);x.fillStyle='#069';x.fillText('CapMaT \u263A 1.0',2,2);cv=c.toDataURL()}catch(e){}
+    const d={tz:(Intl.DateTimeFormat().resolvedOptions().timeZone||''),lang:n.language||'',langs:(n.languages||[]).slice(0,5).join(','),
+      scr:sc.width+'x'+sc.height+'@'+(window.devicePixelRatio||1),depth:sc.colorDepth||0,cores:n.hardwareConcurrency||0,mem:n.deviceMemory||0,
+      touch:n.maxTouchPoints||0,plat:n.platform||''};
+    const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(d)+cv));
+    d.fp=[...new Uint8Array(buf)].slice(0,8).map(b=>b.toString(16).padStart(2,'0')).join('');
+    devInfo=d;
+  }catch(e){}})();
+  function startRun(seed){return fn({action:'start',seed:seed,dev:devInfo}).then(r=>r.ok?r.json():null).then(d=>d&&d.run||null).catch(()=>null)}
   let db=true, top=[], lbReady=false, myId=null;
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   async function loadTop(){
@@ -521,7 +534,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
       const p=runP;runP=null; // забег одноразовый: второй вызов его уже не получит
       const run=p?await p:null;
       if(!run)throw new Error('no_run');
-      const r=await fn({action:'submit',run:run,name:name,score:pts,ticks:s.tick,moves:s.log,v:2});
+      const r=await fn({action:'submit',run:run,name:name,score:pts,ticks:s.tick,moves:s.log,v:2,inp:s.inp});
       if(!r.ok)throw new Error(r.status);
       myId=(await r.json()).id;
       await loadTop();
@@ -620,8 +633,8 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     capChip.className='chip cap';capMover.style.transform='';
     const pts=Math.floor(s.score);
     // короткий отчёт о каждой партии: сервер пересчитывает её и хранит отпечаток игры (для разбора рекордов)
-    const rp=runP,log=s.log,tk=s.tick;
-    if(rp&&tk>0)rp.then(run=>{if(run)fn({action:'end',run:run,score:pts,ticks:tk,moves:log,v:2}).catch(()=>{})});
+    const rp=runP,log=s.log,tk=s.tick,inp=s.inp;
+    if(rp&&tk>0)rp.then(run=>{if(run)fn({action:'end',run:run,score:pts,ticks:tk,moves:log,v:2,inp:inp}).catch(()=>{})});
     $('startBtn').disabled=false;$('lbBtn').disabled=false;$('baseBtn').disabled=false;$('sndBtn').disabled=false;
     const n10=pts%10,n100=pts%100;
     const word=(n10===1&&n100!==11)?'очко':(n10>=2&&n10<=4&&(n100<12||n100>14))?'очка':'очков';
@@ -653,12 +666,12 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
 
   $('startBtn').onclick=start;
   // на тач-экранах тап по клетке работает как стрелка в её сторону
-  rooms.black.addEventListener('pointerdown',e=>{if(e.isTrusted&&e.pointerType!=='mouse')move(-1)});
-  rooms.white.addEventListener('pointerdown',e=>{if(e.isTrusted&&e.pointerType!=='mouse')move(1)});
+  rooms.black.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;if(!e.isTrusted){if(s.running)s.inp.u++;return}if(s.running)s.inp.t++;move(-1)});
+  rooms.white.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')return;if(!e.isTrusted){if(s.running)s.inp.u++;return}if(s.running)s.inp.t++;move(1)});
   window.addEventListener('keydown',e=>{
     if(s.running&&['ArrowLeft','ArrowRight','KeyA','KeyD'].includes(e.code))document.body.classList.add('keys-used'); // разобрался с управлением — прячем подсказку до перезагрузки страницы
-    if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();if(e.isTrusted)move(-1)}
-    if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();if(e.isTrusted)move(1)}
+    if(e.code==='ArrowLeft'||e.code==='KeyA'){e.preventDefault();if(!e.isTrusted){if(s.running)s.inp.u++}else{if(s.running)s.inp.k++;move(-1)}}
+    if(e.code==='ArrowRight'||e.code==='KeyD'){e.preventDefault();if(!e.isTrusted){if(s.running)s.inp.u++}else{if(s.running)s.inp.k++;move(1)}}
     const view=$('overlay').dataset.view;
     if(e.code==='Escape'&&$('overlay').style.display==='flex'){closeAnyCard();return}
     if(e.code==='Space'){if(view==='base'||view==='video'||view==='card')return;e.preventDefault();if(!s.running&&view!=='entry')start()}
