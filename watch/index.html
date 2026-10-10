@@ -10,55 +10,64 @@
 :root{--bg:#0B0A07;--card:#211F19;--line:#3a362b;--ink:#F2E9D4;--mute:#a69d88;--acc:#F0BB2F;--red:#EF452E;--grn:#34B244;--amb:#e8a33a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-h1{font-size:18px;margin:0 8px 0 0}
-h2{font-size:15px;margin:0 0 10px}
-main{padding:16px;display:grid;gap:16px;max-width:1500px;margin:0 auto}
-section{background:var(--card);border-radius:12px;padding:14px;overflow:hidden}
-.stats{display:flex;gap:8px;flex-wrap:wrap}
-.stat{background:var(--card);border-radius:8px;padding:6px 10px;color:var(--mute)}
-.stat b{color:var(--ink);font-size:15px;margin-left:4px}
+header{position:sticky;top:0;z-index:3;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 16px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+h1{font-size:17px;margin:0 8px 0 0}
+main{padding:12px 16px 40px;max-width:1600px;margin:0 auto}
+.stat{background:var(--card);border-radius:8px;padding:4px 10px;color:var(--mute);font-size:13px}
+.stat b{color:var(--ink);margin-left:4px}
+.tabs{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--mute);background:transparent;font:inherit}
+.tab.on{background:var(--ink);color:#100C02;border-color:var(--ink);font-weight:700}
+.tab .n{margin-left:6px;font-size:12px;opacity:.8}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0;color:var(--mute)}
+.filters input[type=text],.filters input[type=number]{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:6px;padding:4px 8px;font:inherit;width:150px}
+.filters label{display:flex;gap:4px;align-items:center;cursor:pointer}
+section{background:var(--card);border-radius:12px;padding:10px;overflow:hidden}
 .tw{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:640px}
-th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
-th{color:var(--mute);font-weight:600;font-size:12px}
-td.why{white-space:normal;min-width:240px;color:var(--mute)}
-tr.hid td{opacity:.55}
-.risk{display:inline-block;min-width:34px;text-align:center;border-radius:6px;padding:1px 6px;font-weight:700;color:#100C02}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:5px 7px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+th{color:var(--mute);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--card);cursor:pointer;user-select:none}
+th.s::after{content:' ↓';color:var(--acc)}th.s.up::after{content:' ↑'}
+td.why{white-space:normal;min-width:220px;color:var(--mute);font-size:13px}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.hid td{opacity:.5}
+tr:hover td{background:#2a2720}
+.bad{color:#100C02;background:var(--red)!important;border-radius:4px;font-weight:700}
+.warn{color:#100C02;background:var(--amb)!important;border-radius:4px}
+.risk{display:inline-block;min-width:32px;text-align:center;border-radius:6px;padding:0 6px;font-weight:700;color:#100C02}
 .r0{background:#3d4a3a;color:var(--ink)}.r3{background:var(--amb)}.r2{background:#f07a3a}.r1{background:var(--red);color:#fff}
-.tag{display:inline-block;border-radius:6px;padding:0 6px;margin-right:4px;font-size:12px;border:1px solid var(--line);color:var(--mute)}
+.tag{display:inline-block;border-radius:6px;padding:0 6px;margin-left:4px;font-size:12px;border:1px solid var(--line);color:var(--mute)}
 .tag.ban{border-color:var(--red);color:var(--red)}.tag.hum{border-color:var(--grn);color:var(--grn)}.tag.bot{border-color:var(--red);color:var(--red)}
 button{font:inherit;font-size:12px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:3px 8px;cursor:pointer;margin:0 4px 4px 0}
 button:hover{border-color:var(--ink)}
 button.pri{background:var(--acc);border-color:var(--acc);color:#100C02;font-weight:700}
 a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-monospace,Menlo,monospace}
-.mono{font-family:ui-monospace,Menlo,monospace}
-.mute{color:var(--mute)}
-#msg{color:var(--mute)}
+.mono{font-family:ui-monospace,Menlo,monospace}.mute{color:var(--mute)}
 #lock{max-width:520px;margin:15vh auto;padding:16px;text-align:center;color:var(--mute)}
-#detail{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;z-index:5;padding:16px;overflow:auto}
-#detail .box{background:var(--card);border-radius:12px;padding:14px;max-width:1400px;margin:0 auto}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media (max-width:900px){.split{grid-template-columns:1fr}}
+#detail{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;z-index:5;padding:16px;overflow:auto}
+#detail .box{background:var(--card);border-radius:12px;padding:14px;max-width:1500px;margin:0 auto}
+.legend{color:var(--mute);font-size:12px;margin:8px 0 0}
+.legend span{padding:0 4px}
 </style>
 </head>
 <body>
 <div id="lock">Нет доступа.</div>
 <div id="app" hidden>
 <header>
-  <h1>Наблюдение · CapMaT</h1>
-  <div class="stats" id="stats"></div>
-  <button class="pri" id="refresh">Обновить</button>
-  <button id="analyze">Проверить сейчас</button>
-  <span id="msg"></span>
+  <div class="row">
+    <h1>Наблюдение · CapMaT</h1>
+    <span id="stats" class="row"></span>
+    <button class="pri" id="refresh">Обновить</button>
+    <button id="analyze">Проверить сейчас</button>
+    <span id="msg" class="mute"></span>
+  </div>
+  <div class="tabs" id="tabs"></div>
 </header>
 <main>
-  <section><h2>Ловцы <span class="mute">(скрытые — полупрозрачные, их не видят игроки)</span></h2><div class="tw"><table id="board"></table></div></section>
-  <div class="split">
-    <section><h2>Подозрительные партии за неделю</h2><div class="tw"><table id="recent"></table></div></section>
-    <section><h2>Игроки за неделю</h2><div class="tw"><table id="players"></table></div></section>
-  </div>
-  <section><h2>Баны</h2><div class="tw"><table id="bans"></table></div></section>
+  <div class="filters" id="filters"></div>
+  <section><div class="tw"><table id="tbl"></table></div></section>
+  <p class="legend"><span class="bad">красное</span> — так не играют люди, <span class="warn">жёлтое</span> — необычно, стоит присмотреться. Клик по заголовку — сортировка, по игроку — все его партии.</p>
 </main>
 </div>
 <div id="detail"><div class="box" id="dbox"></div></div>
@@ -72,74 +81,118 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
   const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pad=n=>String(n).padStart(2,'0');
   const dt=s=>{if(!s)return'';const d=new Date(s);return pad(d.getDate())+'.'+pad(d.getMonth()+1)+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
-  const mmss=s=>s==null?'':(s>=60?Math.floor(s/60)+' мин '+pad(s%60)+' с':s+' с');
+  const mmss=s=>s==null?'':(s>=60?Math.floor(s/60)+':'+pad(s%60):s+' с');
   const risk=r=>r==null?'<span class="mute">—</span>':`<span class="risk ${r>=99?'r1':r>=60?'r2':r>0?'r3':'r0'}">${r}</span>`;
-  const dev=ua=>{ua=ua||'';const os=/iPhone|iPad/.test(ua)?'iOS':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Windows':/Mac OS/.test(ua)?'Mac':/Linux/.test(ua)?'Linux':'?';
-    const br=/YaBrowser/.test(ua)?'Яндекс':/Edg\//.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':'?';return os+' · '+br};
+  const dev=ua=>{ua=ua||'';if(!ua)return'';const os=/iPhone|iPad/.test(ua)?'iOS':/Android/.test(ua)?'Android':/Windows/.test(ua)?'Win':/Mac OS/.test(ua)?'Mac':/Linux/.test(ua)?'Linux':'?';
+    const br=/YaBrowser/.test(ua)?'Яндекс':/Edg\//.test(ua)?'Edge':/Firefox/.test(ua)?'Firefox':/Chrome/.test(ua)?'Chrome':/Safari/.test(ua)?'Safari':'?';return os+'·'+br};
+  const BAD=new Set(['med_lat','synth','ppm','fooled','pts_min']); // красным — физически нехарактерно для людей
+  const cell=(v,f,flags,extra='')=>{const on=(flags||[]).includes(f);return `<td class="num ${on?(BAD.has(f)?'bad':'warn'):''}">${v??''}${extra}</td>`};
+  const pl=ip=>ip?`<a class="ip" data-ip="${ip}">${ip.slice(0,8)}</a>`:'<span class="mute">до защиты</span>';
   async function call(body){
     const r=await fetch(FN,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json','x-admin-token':TOKEN},body:JSON.stringify(body)});
-    if(r.status===404)throw new Error('denied');
-    return r.json();
+    if(r.status===404)throw new Error('denied');return r.json();
   }
-  let data=null;
+  let data=null,tab='board';const st={sort:{},q:'',onlyRisk:false,onlySaved:false,min:0};
+  const TABS=[['board','Рейтинг'],['runs','Все попытки'],['players','Игроки'],['bans','Баны']];
   async function load(){
     $('msg').textContent='загрузка…';
     try{data=await call({action:'overview'});render();$('msg').textContent='обновлено '+dt(data.now).slice(6)}
     catch(e){if(e.message==='denied'){$('app').hidden=true;$('lock').hidden=false}else $('msg').textContent='ошибка: '+e.message}
   }
+  // сортировка: колонка → функция значения
+  function sorted(list,key,cols){const s=st.sort[key];if(!s)return list;const f=cols[s.c];return [...list].sort((a,b)=>{const x=f(a),y=f(b);return (x==null)-(y==null)||(x<y?-1:x>y?1:0)*(s.up?1:-1)})}
+  function head(key,cols,labels){const s=st.sort[key]||{};return '<tr>'+labels.map(([c,l])=>`<th data-sort="${c}" class="${s.c===c?'s'+(s.up?' up':''):''}">${l}</th>`).join('')+'</tr>'}
   function render(){
     $('lock').hidden=true;$('app').hidden=false;
     const s=data.stats;
-    $('stats').innerHTML=[['партий за час',s.starts1h],['игроков за час',s.players1h],['партий за сутки',s.starts24h],
-      ['отчётов за неделю',s.finished7d],['с риском',s.flagged7d],['банов',s.bans]].map(([a,b])=>`<span class="stat">${a}<b>${b}</b></span>`).join('');
-    $('board').innerHTML='<tr><th>#</th><th>Ник</th><th>Очки</th><th>Когда</th><th>Партия</th><th>Реакция</th><th>Риск</th><th>Игрок</th><th>Почему</th><th></th></tr>'+
-      data.board.map((r,i)=>`<tr class="${r.hidden?'hid':''}"><td>${i+1}</td><td>${esc(r.name)}</td><td><b>${r.score}</b></td><td>${dt(r.at)}</td>
-      <td>${mmss(r.game_sec)}</td><td>${r.med_lat==null?'':r.med_lat+' мс'}</td><td>${risk(r.risk)}</td>
-      <td>${r.ip?`<a class="ip" data-ip="${r.ip}">${r.ip.slice(0,8)}</a>`:'<span class="mute">до защиты</span>'}</td>
-      <td class="why">${esc(r.hidden?('скрыт: '+(r.hidden_reason||'')):(r.why||''))}</td>
-      <td><button data-act="${r.hidden?'unhide':'hide'}" data-id="${r.id}">${r.hidden?'вернуть':'скрыть'}</button></td></tr>`).join('');
-    $('recent').innerHTML='<tr><th>Когда</th><th>Игрок</th><th>Очки</th><th>Партия</th><th>Риск</th><th>Почему</th></tr>'+
-      data.recent.map(r=>`<tr><td>${dt(r.started_at)}</td><td><a class="ip" data-ip="${r.ip}">${esc((r.ip||'').slice(0,8))}</a></td><td>${r.real}</td>
-      <td>${mmss(r.game_sec)}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why)}</td></tr>`).join('')||'<tr><td class="mute">пока пусто</td></tr>';
-    $('players').innerHTML='<tr><th>Игрок</th><th>Риск</th><th>Лучший</th><th>Партий</th><th>Стартов/сутки</th><th>Устройство</th><th>Страны</th><th></th></tr>'+
-      data.players.map(p=>`<tr><td><a class="ip" data-ip="${p.ip}">${p.ip.slice(0,8)}</a> ${p.banned?'<span class="tag ban">бан</span>':''}${p.label==='human'?'<span class="tag hum">человек</span>':p.label==='bot'?'<span class="tag bot">бот</span>':''}</td>
-      <td>${risk(p.maxRisk)}</td><td>${p.best}</td><td>${p.runs}</td><td>${p.starts24h}</td><td>${esc(dev(p.ua))}${p.devices.length>1?` <span class="tag">${p.devices.length} устр.</span>`:''}</td>
-      <td>${esc(p.countries.join(', '))}</td><td></td></tr>`).join('');
-    $('bans').innerHTML='<tr><th>Когда</th><th>Игрок</th><th>Причина</th><th></th></tr>'+
-      data.bans.map(b=>`<tr><td>${dt(b.created_at)}</td><td><a class="ip" data-ip="${b.ip_hash.slice(0,16)}">${b.ip_hash.slice(0,8)}</a></td>
-      <td class="why">${esc(b.reason)}</td><td><button data-op="unban" data-ip="${b.ip_hash.slice(0,16)}">снять бан</button></td></tr>`).join('');
+    $('stats').innerHTML=[['партий/час',s.starts1h],['игроков/час',s.players1h],['партий/сутки',s.starts24h],['с риском',s.flagged7d],['банов',s.bans]].map(([a,b])=>`<span class="stat">${a}<b>${b}</b></span>`).join('');
+    const counts={board:data.board.length,runs:data.runs.length,players:data.players.length,bans:data.bans.length};
+    $('tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab ${tab===k?'on':''}" data-tab="${k}">${l}<span class="n">${counts[k]}</span></button>`).join('');
+    const q=st.q.trim().toLowerCase();
+    if(tab==='board'){
+      $('filters').innerHTML=`<label><input type="checkbox" id="fRisk" ${st.onlyRisk?'checked':''}> только с риском или скрытые</label>`;
+      const cols={i:r=>r.i,name:r=>r.name,score:r=>r.score,at:r=>r.at,g:r=>r.game_sec,pm:r=>r.pts_min,lat:r=>r.med_lat,risk:r=>r.risk};
+      let list=data.board.map((r,i)=>({...r,i:i+1}));if(st.onlyRisk)list=list.filter(r=>r.hidden||(r.risk||0)>0);
+      $('tbl').innerHTML=head('board',cols,[['i','#'],['name','Ник'],['score','Очки'],['at','Когда'],['g','Партия'],['pm','Очк/мин'],['lat','Реакция'],['risk','Риск'],['p','Игрок'],['d','Устройство'],['w','Почему'],['a','']])+
+        sorted(list,'board',cols).map(r=>`<tr class="${r.hidden?'hid':''}"><td>${r.i}</td><td>${esc(r.name)}</td><td class="num"><b>${r.score}</b></td><td>${dt(r.at)}</td>
+        <td class="num">${mmss(r.game_sec)}</td>${cell(r.pts_min,'pts_min',r.flags)}${cell(r.med_lat,'med_lat',r.flags,r.med_lat!=null?' мс':'')}<td>${risk(r.risk)}</td><td>${pl(r.ip)}</td>
+        <td>${esc(dev(r.ua))} ${esc(r.country||'')}</td><td class="why">${esc(r.hidden?('скрыт: '+(r.hidden_reason||'')):(r.why||''))}</td>
+        <td><button data-act="${r.hidden?'unhide':'hide'}" data-id="${r.id}">${r.hidden?'вернуть':'скрыть'}</button></td></tr>`).join('');
+    }
+    if(tab==='runs'){
+      $('filters').innerHTML=`<input type="text" id="fQ" placeholder="ник или адрес" value="${esc(st.q)}"><label><input type="checkbox" id="fRisk" ${st.onlyRisk?'checked':''}> только подозрительные</label>
+        <label><input type="checkbox" id="fSaved" ${st.onlySaved?'checked':''}> только рекорды</label><label>от <input type="number" id="fMin" value="${st.min||''}" placeholder="0"> очков</label>`;
+      const cols={t:r=>r.started_at,p:r=>r.ip,name:r=>r.name,o:r=>r.outcome,real:r=>r.real,g:r=>r.game_sec,pm:r=>r.pts_min,lat:r=>r.med_lat,iqr:r=>r.lat_iqr,
+        c:r=>r.catches,gs:r=>r.guesses,op:r=>r.opm,pp:r=>r.ppm,u:r=>(r.inp||{}).u,risk:r=>r.risk};
+      let list=data.runs;
+      if(q)list=list.filter(r=>(r.ip||'').startsWith(q)||(r.name||'').toLowerCase().includes(q));
+      if(st.onlyRisk)list=list.filter(r=>(r.risk||0)>0||(r.flags||[]).length);
+      if(st.onlySaved)list=list.filter(r=>r.outcome==='saved');
+      if(st.min)list=list.filter(r=>(r.real||0)>=st.min);
+      $('tbl').innerHTML=head('runs',cols,[['t','Когда'],['p','Игрок'],['name','Ник'],['o','Исход'],['real','Очки'],['g','Партия'],['pm','Очк/мин'],['lat','Реакция'],['iqr','Разброс'],['c','Догонов'],['gs','Угад./попался (ожид.)'],['op','«Упс»/мин'],['pp','Нажатий/мин'],['u','Скрипт'],['d','Устройство'],['risk','Риск'],['w','Почему']])+
+        sorted(list,'runs',cols).slice(0,600).map(r=>{const u=(r.inp||{}).u;return `<tr><td>${dt(r.started_at)}</td><td>${pl(r.ip)}</td><td>${esc(r.name||'')}</td><td>${esc(r.outcome)}</td>
+        <td class="num"><b>${r.real??''}</b></td>${cell(mmss(r.game_sec),'long',r.flags)}${cell(r.pts_min,'pts_min',r.flags)}${cell(r.med_lat,'med_lat',r.flags)}${cell(r.lat_iqr,'lat_iqr',r.flags)}
+        <td class="num">${r.catches??''}</td>${cell((r.guesses??'')+'/'+(r.fooled??'')+(r.exp_fooled!=null?' ('+r.exp_fooled+')':''),'fooled',r.flags)}${cell(r.opm,'opm',r.flags)}${cell(r.ppm,'ppm',r.flags)}${cell(u,'synth',r.flags)}
+        <td>${esc(dev(r.ua))} ${esc(r.country||'')}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why||'')}</td></tr>`}).join('')||'<tr><td class="mute">ничего не найдено</td></tr>';
+    }
+    if(tab==='players'){
+      $('filters').innerHTML=`<input type="text" id="fQ" placeholder="ник или адрес" value="${esc(st.q)}"><label><input type="checkbox" id="fRisk" ${st.onlyRisk?'checked':''}> только с риском</label>`;
+      const cols={p:r=>r.ip,name:r=>r.name,risk:r=>r.maxRisk,best:r=>r.best,runs:r=>r.runs,saved:r=>r.saved,s24:r=>r.starts24h,last:r=>r.last};
+      let list=data.players;if(q)list=list.filter(p=>p.ip.startsWith(q)||(p.name||'').toLowerCase().includes(q));if(st.onlyRisk)list=list.filter(p=>p.maxRisk>0);
+      $('tbl').innerHTML=head('players',cols,[['p','Игрок'],['name','Последний ник'],['risk','Макс. риск'],['best','Лучший'],['runs','Доиграно'],['saved','Рекордов'],['s24','Стартов/сутки'],['last','Последняя'],['d','Устройство'],['c','Страны'],['w','Почему']])+
+        sorted(list,'players',cols).map(p=>`<tr><td>${pl(p.ip)}${p.banned?'<span class="tag ban">бан</span>':''}${p.label==='human'?'<span class="tag hum">человек</span>':p.label==='bot'?'<span class="tag bot">бот</span>':''}</td>
+        <td>${esc(p.name||'')}</td><td>${risk(p.maxRisk)}</td><td class="num">${p.best}</td><td class="num">${p.runs}</td><td class="num">${p.saved}</td><td class="num">${p.starts24h}</td><td>${dt(p.last)}</td>
+        <td>${esc(dev(p.ua))}${p.devices.length>1?`<span class="tag">${p.devices.length} устр.</span>`:''}</td><td>${esc(p.countries.join(', '))}</td><td class="why">${esc(p.why||'')}</td></tr>`).join('');
+    }
+    if(tab==='bans'){
+      $('filters').innerHTML='';
+      $('tbl').innerHTML='<tr><th>Когда</th><th>Игрок</th><th>Причина</th><th></th></tr>'+data.bans.map(b=>`<tr><td>${dt(b.created_at)}</td><td>${pl(b.ip_hash.slice(0,16))}</td>
+        <td class="why">${esc(b.reason)}</td><td><button data-op="unban" data-ip="${b.ip_hash.slice(0,16)}">снять бан</button></td></tr>`).join('');
+    }
+  }
+  // Сводка игрока для разбора в чате с Claude: текст, без ключей и адреса страницы.
+  function forClaude(ip,runs,p){
+    const L=[`Игрок ${ip}${p.name?' (ник '+p.name+')':''}${p.banned?' [бан]':''}${p.label?' [пометка: '+p.label+']':''}`,
+      `Устройство: ${(runs[runs.length-1]||{}).ua||'?'}`,`Отпечаток: ${[...new Set(runs.map(r=>r.dev&&r.dev.fp).filter(Boolean))].join(', ')||'?'} · страны: ${[...new Set(runs.map(r=>r.country).filter(Boolean))].join(', ')||'?'}`,
+      'старт | исход | очки | сек | очк/мин | реакция p10/med/p90 | разброс | начало→конец | догонов | угад/попался(ожид) | упс | клав/тап/скрипт | риск | почему'];
+    for(const r of runs){const i=r.inp||{};L.push([dt(r.started_at),r.outcome||'брошена',r.real??'',r.game_sec??'',r.pts_min??'',`${r.lat_p10??''}/${r.med_lat??''}/${r.lat_p90??''}`,r.lat_iqr??'',
+      `${r.lat_first??''}→${r.lat_last??''}`,r.catches??'',`${r.guesses??''}/${r.fooled??''}(${r.exp_fooled??''})`,r.oops??'',`${i.k??''}/${i.t??''}/${i.u??''}`,r.risk??'',r.risk_why||''].join(' | '))}
+    return L.join('\n');
   }
   async function player(ip){
     $('dbox').innerHTML='загрузка…';$('detail').style.display='block';
-    const d=await call({action:'player',ip});const p=(data.players||[]).find(x=>x.ip===ip)||{};
-    const rows=d.runs.map(r=>{const m=Math.max(1,(r.game_sec||0))/60;const inp=r.inp||{};
-      return `<tr><td>${dt(r.started_at)}</td><td>${esc(r.outcome||'брошена')}</td><td><b>${r.real??''}</b></td><td>${mmss(r.game_sec)}</td>
-      <td>${r.real&&r.game_sec?Math.round(r.real/m):''}</td><td>${r.med_lat??''}</td><td>${r.lat_iqr??''}</td><td>${r.lat_first??''}→${r.lat_last??''}</td>
-      <td>${r.catches??''}</td><td>${r.guesses??''}/${r.fooled??''}${r.exp_fooled!=null?' ('+r.exp_fooled+')':''}</td><td>${r.oops??''}${r.oops!=null&&r.game_sec?' ('+Math.round(r.oops/m)+'/мин)':''}</td>
-      <td>${inp.k??''}/${inp.t??''}/${inp.u??''}</td><td>${esc(r.country||'')}</td><td class="mono">${esc((r.dev&&r.dev.fp)||'')}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why||'')}</td></tr>`}).join('');
-    const last=d.runs[d.runs.length-1]||{};
-    $('dbox').innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><h2>Игрок <span class="mono">${ip}</span> ${p.banned?'<span class="tag ban">бан</span>':''}${p.label?`<span class="tag ${p.label==='human'?'hum':'bot'}">${p.label==='human'?'человек':'бот'}</span>`:''}</h2>
-      <div><button data-op="human" data-ip="${ip}">это человек</button><button data-op="bot" data-ip="${ip}">это бот</button><button data-op="unlabel" data-ip="${ip}">снять пометку</button>
+    const d=await call({action:'player',ip});const p=(data.players||[]).find(x=>x.ip===ip)||{};const last=d.runs[d.runs.length-1]||{};
+    const rows=d.runs.map(r=>{const i=r.inp||{};return `<tr><td>${dt(r.started_at)}</td><td>${esc(r.outcome||'брошена')}</td><td class="num"><b>${r.real??''}</b></td>${cell(mmss(r.game_sec),'long',r.flags)}
+      ${cell(r.pts_min,'pts_min',r.flags)}${cell(r.med_lat,'med_lat',r.flags)}${cell(r.lat_iqr,'lat_iqr',r.flags)}<td class="num">${r.lat_first??''}→${r.lat_last??''}</td><td class="num">${r.catches??''}</td>
+      ${cell((r.guesses??'')+'/'+(r.fooled??'')+(r.exp_fooled!=null?' ('+r.exp_fooled+')':''),'fooled',r.flags)}${cell(r.opm,'opm',r.flags)}${cell(r.ppm,'ppm',r.flags)}${cell((i.k??'')+'/'+(i.t??'')+'/'+(i.u??''),'synth',r.flags)}
+      <td>${esc(r.country||'')}</td><td class="mono">${esc((r.dev&&r.dev.fp)||'')}</td><td>${risk(r.risk)}</td><td class="why">${esc(r.risk_why||'')}</td></tr>`}).join('');
+    $('dbox').innerHTML=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">Игрок <span class="mono">${ip}</span>${p.name?' · '+esc(p.name):''}${p.banned?'<span class="tag ban">бан</span>':''}${p.label?`<span class="tag ${p.label==='human'?'hum':'bot'}">${p.label==='human'?'человек':'бот'}</span>`:''}</h2>
+      <div><button class="pri" id="copyc">Скопировать для Claude</button><button data-op="human" data-ip="${ip}">это человек</button><button data-op="bot" data-ip="${ip}">это бот</button><button data-op="unlabel" data-ip="${ip}">снять пометку</button>
       ${p.banned?`<button data-op="unban" data-ip="${ip}">снять бан</button>`:`<button data-op="ban" data-ip="${ip}">забанить</button>`}<button id="close">закрыть</button></div></div>
-      <p class="mute">${esc(dev(last.ua))} · ${esc((last.dev&&[last.dev.tz,last.dev.scr,last.dev.lang].filter(Boolean).join(' · '))||'')}</p>
-      <div class="tw"><table><tr><th>Старт</th><th>Исход</th><th>Очки</th><th>Партия</th><th>Очк/мин</th><th>Реакция</th><th>Разброс</th><th>Начало→конец</th><th>Догонов</th><th>Угад/попался (ожид.)</th><th>«Упс»</th><th>Клав/тап/скрипт</th><th>Страна</th><th>Устройство</th><th>Риск</th><th>Почему</th></tr>${rows}</table></div>`;
+      <p class="mute">${esc(dev(last.ua))} · ${esc((last.dev&&[last.dev.tz,last.dev.scr,last.dev.lang].filter(Boolean).join(' · '))||'')} · партий: ${d.runs.length}</p>
+      <div class="tw"><table><tr><th>Старт</th><th>Исход</th><th>Очки</th><th>Партия</th><th>Очк/мин</th><th>Реакция</th><th>Разброс</th><th>Начало→конец</th><th>Догонов</th><th>Угад./попался (ожид.)</th><th>«Упс»/мин</th><th>Нажатий/мин</th><th>Клав/тап/скрипт</th><th>Страна</th><th>Устройство</th><th>Риск</th><th>Почему</th></tr>${rows}</table></div>`;
     $('close').onclick=()=>{$('detail').style.display='none'};
+    $('copyc').onclick=async()=>{try{await navigator.clipboard.writeText(forClaude(ip,d.runs,p));$('copyc').textContent='Скопировано — вставьте в чат'}catch(e){$('copyc').textContent='Не скопировалось'}};
   }
   document.addEventListener('click',async e=>{
     const t=e.target;
+    if(t.dataset.tab){tab=t.dataset.tab;return render()}
+    if(t.dataset.sort){const k=tab,c=t.dataset.sort,s=st.sort[k];st.sort[k]={c,up:s&&s.c===c?!s.up:false};return render()}
     if(t.matches('a.ip')&&t.dataset.ip)return player(t.dataset.ip);
     if(t===$('detail'))return $('detail').style.display='none';
     if(t.dataset.act){await call({action:'act',op:t.dataset.act,score_id:Number(t.dataset.id)});return load()}
-    if(t.dataset.op){
-      const ip=t.dataset.ip;let note='';
-      if(t.dataset.op==='ban'){note=prompt('Причина бана (для себя):','')??null;if(note===null)return}
-      await call({action:'act',op:t.dataset.op,ip,note});$('detail').style.display='none';return load();
-    }
+    if(t.dataset.op){let note='';if(t.dataset.op==='ban'){note=prompt('Причина бана (для себя):','');if(note===null)return}
+      await call({action:'act',op:t.dataset.op,ip:t.dataset.ip,note});$('detail').style.display='none';return load()}
+  });
+  document.addEventListener('input',e=>{const t=e.target;
+    if(t.id==='fQ'){st.q=t.value;render();const n=$('fQ');n.focus();n.setSelectionRange(n.value.length,n.value.length)}
+    if(t.id==='fRisk'){st.onlyRisk=t.checked;render()}if(t.id==='fSaved'){st.onlySaved=t.checked;render()}
+    if(t.id==='fMin'){st.min=Number(t.value)||0;render();const n=$('fMin');n.focus()}
   });
   $('refresh').onclick=load;
   $('analyze').onclick=async()=>{$('msg').textContent='проверяю…';const r=await call({action:'analyze'});$('msg').textContent='проверено партий: '+(r.analyzed??r.error);load()};
   document.addEventListener('keydown',e=>{if(e.key==='Escape')$('detail').style.display='none'});
-  if(TOKEN.length<20){$('lock').hidden=false}else{load();setInterval(()=>{if(!document.hidden&&$('detail').style.display!=='block')load()},60000)}
+  if(TOKEN.length<20){$('lock').hidden=false}else{load();setInterval(()=>{const busy=document.activeElement&&/INPUT/.test(document.activeElement.tagName);if(!document.hidden&&$('detail').style.display!=='block'&&!busy)load()},60000)}
 })();
 </script>
 </body>
