@@ -488,6 +488,7 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
   function startRun(seed){return fn({action:'start',seed:seed,dev:devInfo}).then(r=>r.ok?r.json():null).then(d=>d&&d.run||null).catch(()=>null)}
   let db=true, top=[], lbReady=false, myId=null;
   const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const LB_SIZE=40; // сколько мест в «Ловцах» (и до какого места можно сохранить результат); объявлено до первого loadTop()
   async function loadTop(){
     try{
       // «Ловцы»: лучший результат каждого игрока (представление leaderboard); запасной путь — прямо из таблицы
@@ -506,7 +507,6 @@ body.playing .name{pointer-events:none}  /* во время забега тап 
     if(!db||pts<=0)return false;
     return top.length<LB_SIZE||pts>(top[top.length-1].score||0);
   }
-  const LB_SIZE=40; // сколько мест в «Ловцах» (и до какого места можно сохранить результат)
   function boardHtml(pending){
     if(!db)return '<p class="muted">Таблица лидеров сейчас недоступна.</p>';
     if(!lbReady)return '<p class="muted">Загружаю…</p>';
