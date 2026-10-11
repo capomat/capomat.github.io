@@ -48,6 +48,10 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
 #detail{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;z-index:5;padding:16px;overflow:auto}
 #detail .box{background:var(--card);border-radius:12px;padding:14px;max-width:1500px;margin:0 auto}
 .legend{color:var(--mute);font-size:12px;margin:8px 0 0}
+.banstats{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.bstat{background:var(--card);border-radius:10px;padding:8px 14px;display:flex;flex-direction:column;min-width:110px}
+.bstat b{font-size:22px;color:var(--ink)}
+.bstat span{font-size:12px;color:var(--mute)}
 .legend span{padding:0 4px}
 </style>
 </head>
@@ -107,7 +111,7 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
   function render(){
     $('lock').hidden=true;$('app').hidden=false;
     const s=data.stats;
-    $('stats').innerHTML=[['партий/час',s.starts1h],['игроков/час',s.players1h],['партий/сутки',s.starts24h],['с риском',s.flagged7d],['банов',s.bans]].map(([a,b])=>`<span class="stat">${a}<b>${b}</b></span>`).join('');
+    $('stats').innerHTML=[['партий/час',s.starts1h],['игроков/час',s.players1h],['партий/сутки',s.starts24h],['с риском',s.flagged7d],['банов',s.bans+(data.banStats&&data.banStats.day?' (+'+data.banStats.day+' за сутки)':'')]].map(([a,b])=>`<span class="stat">${a}<b>${b}</b></span>`).join('');
     const counts={board:data.board.length,runs:data.runs.length,players:data.players.length,bans:data.bans.length};
     $('tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab ${tab===k?'on':''}" data-tab="${k}">${l}<span class="n">${counts[k]}</span></button>`).join('');
     const q=st.q.trim().toLowerCase();
@@ -147,9 +151,14 @@ a.ip{color:var(--acc);cursor:pointer;text-decoration:underline;font-family:ui-mo
         <td>${esc(dev(p.ua))}${p.devices.length>1?`<span class="tag">${p.devices.length} устр.</span>`:''}</td><td>${esc(p.countries.join(', '))}</td><td class="why">${esc(p.why||'')}</td></tr>`).join('');
     }
     if(tab==='bans'){
-      $('filters').innerHTML='';
-      $('tbl').innerHTML='<tr><th>Когда</th><th>Игрок</th><th>Причина</th><th></th></tr>'+data.bans.map(b=>`<tr><td>${dt(b.created_at)}</td><td>${pl(b.ip_hash.slice(0,16))}</td>
-        <td class="why">${esc(b.reason)}</td><td><button data-op="unban" data-ip="${b.ip_hash.slice(0,16)}">снять бан</button></td></tr>`).join('');
+      const bs=data.banStats||{};const TYPE={manual:'вручную по разбору',auto:'автоматика',probe:'прощупывание защиты'};
+      $('filters').innerHTML=`<div class="banstats">${[['всего забанено',bs.total],['за сутки',bs.day],['за неделю',bs.week],['вручную',bs.manual],['автоматика',bs.auto],['прощупывание',bs.probe],['продолжают играть',bs.stillPlaying]]
+        .map(([a,b])=>`<div class="bstat"><b>${b??0}</b><span>${a}</span></div>`).join('')}</div>`;
+      const cols={t:b=>b.created_at,ty:b=>b.type,best:b=>b.best,g:b=>b.games,a:b=>b.after,l:b=>b.lastSeen};
+      $('tbl').innerHTML=head('bans',cols,[['t','Забанен'],['p','Игрок'],['ty','Тип'],['w','Причина'],['best','Лучший'],['g','Партий всего'],['a','После бана'],['l','Последний раз'],['x','']])+
+        sorted(data.bans,'bans',cols).map(b=>`<tr><td>${dt(b.created_at)}</td><td>${pl(b.ip)}${b.label==='bot'?'<span class="tag bot">бот</span>':''}</td><td>${esc(TYPE[b.type]||b.type)}</td>
+        <td class="why">${esc(b.reason)}</td><td class="num">${b.best||''}</td><td class="num">${b.games||''}</td>
+        <td class="num ${b.after?'warn':''}">${b.after||''}</td><td>${dt(b.lastSeen)}</td><td><button data-op="unban" data-ip="${b.ip}">снять бан</button></td></tr>`).join('');
     }
   }
   // Сводка игрока для разбора в чате с Claude: текст, без ключей и адреса страницы.
